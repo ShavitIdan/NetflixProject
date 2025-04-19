@@ -1,9 +1,14 @@
 import React from 'react'
 import './Home.css'
+import Navbar from '../../compenents/Navbar/Navbar'
+import Footer from '../../compenents/Footer/Footer'
 
 const Home = () => {
   return (
-    <div className='home'>Home Page</div>
+    <div className='home'>
+      <Navbar/>
+      <Footer/>
+      </div>
   )
 }
 
