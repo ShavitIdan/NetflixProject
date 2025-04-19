@@ -5,7 +5,7 @@ import Footer from '../../compenents/Footer/Footer'
 import hero from '../../assets/cover.png'
 import heroOverlay from '../../assets/cover_hover.png'
 import coverHover from '../../assets/only_on_hover2.png'
-
+// todo
 const Home = () => {
   return (
     <div className='home'>
