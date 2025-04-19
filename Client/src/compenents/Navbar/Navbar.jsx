@@ -1,11 +1,13 @@
 import React from 'react'
 import './Navbar.css'
+import logo from '../../assets/logo2.png'
+import { FaSearch, FaUser, FaBell } from 'react-icons/fa';
 
 function Navbar() {
   return (
     <div className='navbar' >
       <div className="navbar-left">
-        <img src="" alt="" />
+        <img src={logo} alt="" />
         <ul>
           <li>Home</li>
           <li>TV Shows</li>
@@ -16,7 +18,9 @@ function Navbar() {
         </ul>
       </div>
       <div className="navbar-right">
-        
+        <div className="icons">{<FaSearch/>}</div>
+        <div className="icons">{<FaBell/>}</div>
+        <div className="icons">{<FaUser/>}</div>
       </div>
     </div>
   )
