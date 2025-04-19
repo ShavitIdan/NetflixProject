@@ -1,7 +1,8 @@
 import React from 'react'
 import './Navbar.css'
 import logo from '../../assets/logo2.png'
-import { FaSearch, FaUser, FaBell } from 'react-icons/fa';
+import { FaSearch, FaBell, FaCaretDown } from 'react-icons/fa';
+import user_1 from '../../assets/users/user_1.png'
 
 function Navbar() {
   return (
@@ -20,7 +21,10 @@ function Navbar() {
       <div className="navbar-right">
         <div className="icons">{<FaSearch/>}</div>
         <div className="icons">{<FaBell/>}</div>
-        <div className="icons">{<FaUser/>}</div>
+        <div className="navbar-profile">
+          <img src={user_1} alt="" className="profile" />
+          {<FaCaretDown/>}
+        </div>
       </div>
     </div>
   )

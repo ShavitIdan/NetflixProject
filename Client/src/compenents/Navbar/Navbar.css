@@ -37,6 +37,10 @@
 }
 
 .navbar-right .icons{
-
     cursor: pointer;
+}
+
+.navbar-right .profile{
+    border-radius: 4px;
+    width: 40px;
 }
