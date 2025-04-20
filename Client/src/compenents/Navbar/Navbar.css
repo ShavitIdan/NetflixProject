@@ -44,4 +44,5 @@
 .navbar-right .profile{
     border-radius: 4px;
     width: 40px;
+    cursor: pointer;
 }
