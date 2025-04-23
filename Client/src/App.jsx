@@ -32,8 +32,16 @@ const AppRoutes = () => {
         path="/" 
         element={isAuth ? <Home /> : <Navigate to="/login" replace />} 
       />
+      <Route 
+        path="/tv" 
+        element={isAuth ? <Home /> : <Navigate to="/login" replace />} 
+      />
+      <Route 
+        path="/movies" 
+        element={isAuth ? <Home /> : <Navigate to="/login" replace />} 
+      />
       <Route path="/test" element={<ProfileTest />} />
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };

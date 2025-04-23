@@ -1,17 +1,44 @@
 import React from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import './Navbar.css'
 import logo from '../../assets/logo2.png'
 import { FaSearch, FaBell, FaCaretDown } from 'react-icons/fa';
 
 function Navbar({ selectedProfile }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavClick = (path) => {
+    navigate(path);
+  };
+
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
+
   return (
     <div className='navbar' >
       <div className="navbar-left">
-        <img src={logo} alt="" />
+        <img src={logo} alt="" onClick={() => handleNavClick('/')} style={{ cursor: 'pointer' }} />
         <ul>
-          <li>Home</li>
-          <li>TV Shows</li>
-          <li>Movies</li>
+          <li 
+            className={isActive('/') ? 'active' : ''} 
+            onClick={() => handleNavClick('/')}
+          >
+            Home
+          </li>
+          <li 
+            className={isActive('/tv') ? 'active' : ''} 
+            onClick={() => handleNavClick('/tv')}
+          >
+            TV Shows
+          </li>
+          <li 
+            className={isActive('/movies') ? 'active' : ''} 
+            onClick={() => handleNavClick('/movies')}
+          >
+            Movies
+          </li>
           <li>New & Popular</li>
           <li>My List</li>
           <li>Browse</li>
