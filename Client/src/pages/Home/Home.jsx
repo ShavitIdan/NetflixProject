@@ -9,7 +9,7 @@ import heroOverlay from '../../assets/cover_hover.png'
 import coverHover from '../../assets/only_on_hover2.png'
 import Logo from '../../assets/Logo2.png'
 import tmdbService from '../../services/tmdbService'
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
+import { FaChevronLeft, FaChevronRight, FaInfo } from 'react-icons/fa'
 
 const Home = () => {
   const { isAuth, selectedProfile } = useAuthContext();
@@ -305,7 +305,7 @@ const Home = () => {
                         />
                         <div className="thumbnail-info">
                           <div className="thumbnail-controls">
-                            <button>▶</button>
+                            <button><FaInfo /></button>
                             <button>+</button>
                             <button>👍</button>
                           </div>
