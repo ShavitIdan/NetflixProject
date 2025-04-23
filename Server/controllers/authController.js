@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Profile = require('../models/Profile');
 const jwt = require('jsonwebtoken');
 
 const generateToken = (userId) => {
@@ -25,7 +26,8 @@ exports.register = async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
-        role: user.role
+        role: user.role,
+        profiles: []
       }
     });
   } catch (error) {
@@ -37,17 +39,14 @@ exports.registerAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Create new admin user
     const user = new User({ email, password, role: 'admin' });
     await user.save();
 
-    // Generate token
     const token = generateToken(user._id);
 
     res.status(201).json({
@@ -56,7 +55,8 @@ exports.registerAdmin = async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
-        role: user.role
+        role: user.role,
+        profiles: []
       }
     });
   } catch (error) {
@@ -68,8 +68,8 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user
-    const user = await User.findOne({ email });
+    // Find user and populate profiles
+    const user = await User.findOne({ email }).populate('profiles', 'name avatar');
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -89,7 +89,11 @@ exports.login = async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
-        role: user.role
+        role: user.role,
+        profiles: user.profiles.map(profile => ({
+          name: profile.name,
+          avatar: profile.avatar
+        }))
       }
     });
   } catch (error) {

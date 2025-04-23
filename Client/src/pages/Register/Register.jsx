@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import coverPhoto from '../../assets/coverphoto.png';
 import Logo from '../../assets/Logo2.png';
 import Footer from '../../components/Footer/Footer';
+import { authService } from '../../services/authService'; // update path if needed
 import './Register.css';
 
 const Register = () => {
@@ -27,7 +28,7 @@ const Register = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.email) {
       newErrors.email = 'Please enter a valid email.';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -35,20 +36,33 @@ const Register = () => {
     }
 
     if (!formData.password) {
-      newErrors.password = 'Your password must contain between 4 and 60 characters.';
-    } else if (formData.password.length < 4 || formData.password.length > 60) {
-      newErrors.password = 'Your password must contain between 4 and 60 characters.';
+      newErrors.password = 'Password is required.';
+    } else if (
+      formData.password.length < 8 ||
+      !/[A-Z]/.test(formData.password) ||
+      !/\d/.test(formData.password)
+    ) {
+      newErrors.password = 'Password must be at least 8 characters, include one uppercase letter and one digit.';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      console.log('Register form submitted:', formData);
-      navigate('/profiles');
+    if (!validateForm()) return;
+
+    try {
+      const data = await authService.register(formData.email, formData.password, formData.role);
+      console.log('Registration successful:', data);
+      navigate('/');
+    } catch (error) {
+      console.error('Registration failed:', error.message);
+      setErrors(prev => ({
+        ...prev,
+        email: 'Registration failed. Email might be invalid or already in use.'
+      }));
     }
   };
 
@@ -60,11 +74,7 @@ const Register = () => {
 
       <header className="register-header">
         <Link to="/" className="logo-link">
-          <img 
-            src={Logo} 
-            alt="Tenflix" 
-            className="tenflix-logo"
-          />
+          <img src={Logo} alt="Tenflix" className="tenflix-logo" />
         </Link>
       </header>
 
@@ -117,9 +127,10 @@ const Register = () => {
           </form>
         </div>
       </main>
+
       <Footer />
     </div>
   );
 };
 
-export default Register; 
+export default Register;
