@@ -3,7 +3,7 @@ import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Profile from '../pages/Profile';
 import { isAuthenticated } from '../utils/tokenUtils';
-
+import Home from '../pages/Home';
 const PrivateRoute = ({ children }) => {
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
@@ -28,7 +28,7 @@ const AppRoutes = () => {
         path="/"
         element={
           <PrivateRoute>
-            <Navigate to="/profile" replace />
+            <Home />
           </PrivateRoute>
         }
       />

@@ -29,7 +29,7 @@ const AppRoutes = () => {
         element={isAuth ? <Profile /> : <Navigate to="/login" replace />} 
       />
       <Route 
-        path="/home" 
+        path="/" 
         element={isAuth ? <Home /> : <Navigate to="/login" replace />} 
       />
       <Route path="/test" element={<ProfileTest />} />
