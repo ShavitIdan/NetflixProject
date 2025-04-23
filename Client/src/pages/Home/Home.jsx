@@ -21,6 +21,9 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const rowRefs = useRef({});
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [carouselItems, setCarouselItems] = useState([]);
+  const carouselRef = useRef(null);
 
   // Fetch all content once when component mounts
   useEffect(() => {
@@ -231,6 +234,39 @@ const Home = () => {
     setContentRows(ensuredRows);
   }, [location.pathname, allContent]);
 
+  // Update carousel items when content changes
+  useEffect(() => {
+    if (allContent?.mostPopularContent) {
+      const items = allContent.mostPopularContent
+        .slice(0, 4)
+        .map(item => ({
+          id: item.id,
+          title: item.title || item.name,
+          backdrop: item.backdrop_path,
+          overview: item.overview,
+          media_type: item.media_type
+        }));
+      setCarouselItems(items);
+    }
+  }, [allContent]);
+
+  // Auto-rotate carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % carouselItems.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [carouselItems.length]);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % carouselItems.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + carouselItems.length) % carouselItems.length);
+  };
+
   const scrollRow = (direction, rowIndex) => {
     const row = rowRefs.current[rowIndex];
     if (row) {
@@ -261,16 +297,52 @@ const Home = () => {
     <div className='home'>
       <Navbar selectedProfile={selectedProfile} />
       <main className="home-content">
-        {contentRows[0]?.items[0] && contentRows[0].items[0].backdrop && (
-          <div className="hero">
-            <img 
-              src={contentRows[0].items[0].backdrop} 
-              alt={contentRows[0].items[0].title} 
-              className='hero-banner' 
-            />
-            <div className="hero-overlay">
-              <img src={heroOverlay} alt="" className='caption-img'/>
-              <p>{contentRows[0].items[0].overview}</p>
+        {carouselItems.length > 0 && (
+          <div className="hero-carousel">
+            <div 
+              className="carousel-container"
+              ref={carouselRef}
+            >
+              {carouselItems.map((item, index) => (
+                <div
+                  key={item.id}
+                  className={`carousel-slide ${index === currentSlide ? 'active' : ''}`}
+                  style={{
+                    backgroundImage: `url(${item.backdrop})`,
+                    transform: `translateX(${(index - currentSlide) * 100}%)`
+                  }}
+                >
+                  <div className="carousel-overlay">
+                    <div className="carousel-content">
+                      <h1>{item.title}</h1>
+                      <p>{item.overview}</p>
+                      <div className="carousel-buttons">
+                        <button 
+                          className="info-button"
+                          onClick={() => navigate(`/details/${item.id}?type=${item.media_type}`)}
+                        >
+                          <FaInfo /> More Info
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button className="carousel-button prev" onClick={prevSlide}>
+              <FaChevronLeft />
+            </button>
+            <button className="carousel-button next" onClick={nextSlide}>
+              <FaChevronRight />
+            </button>
+            <div className="carousel-indicators">
+              {carouselItems.map((_, index) => (
+                <button
+                  key={index}
+                  className={`indicator ${index === currentSlide ? 'active' : ''}`}
+                  onClick={() => setCurrentSlide(index)}
+                />
+              ))}
             </div>
           </div>
         )}
