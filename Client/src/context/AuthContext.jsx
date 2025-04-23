@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api';
 
 const AuthContext = createContext();
@@ -7,6 +8,8 @@ export const AuthProvider = ({ children }) => {
   const [isAuth, setIsAuth] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [selectedProfile, setSelectedProfile] = useState(null);
+  const navigate = useNavigate();
 
   const validateToken = async (token) => {
     try {
@@ -123,12 +126,27 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const handleProfileSelection = (profile) => {
+    console.log('Setting selected profile:', profile);
+    setSelectedProfile(profile);
+    navigate('/');
+  };
+
+  const value = {
+    isAuth,
+    user,
+    selectedProfile,
+    setSelectedProfile: handleProfileSelection,
+    login,
+    logout
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <AuthContext.Provider value={{ isAuth, user, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

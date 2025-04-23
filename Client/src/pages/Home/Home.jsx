@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuthContext } from '../../context/AuthContext'
 import './Home.css'
 import Navbar from '../../components/Navbar/Navbar'
 import Footer from '../../components/Footer/Footer'
@@ -9,7 +10,27 @@ import coverHover from '../../assets/only_on_hover2.png'
 import Logo from '../../assets/Logo2.png'
 
 const Home = () => {
+  const { isAuth, selectedProfile } = useAuthContext();
+  const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  useEffect(() => {
+    if (!isAuth) {
+      navigate('/login');
+      return;
+    }
+
+    if (!selectedProfile) {
+      navigate('/profile');
+      return;
+    }
+
+    console.log('Home - Selected Profile:', selectedProfile);
+  }, [isAuth, selectedProfile, navigate]);
+
+  if (!selectedProfile) {
+    return null;
+  }
 
   // Dummy data for content rows
   const contentRows = [
@@ -37,7 +58,7 @@ const Home = () => {
 
   return (
     <div className='home'>
-      <Navbar />
+      <Navbar selectedProfile={selectedProfile} />
       <main className="home-content">
         <div className="hero">
           <img src={hero} alt="" className='hero-banner' />

@@ -77,14 +77,8 @@ const Profile = () => {
     }
   };
 
-  const handleProfileClick = async (profile) => {
-    try {
-      setSelectedProfile(profile);
-      navigate('/');
-    } catch (error) {
-      console.error('Error selecting profile:', error);
-      setError('Failed to select profile. Please try again.');
-    }
+  const handleProfileClick = (profile) => {
+    setSelectedProfile(profile);
   };
 
   const handleEditClick = (profile) => {
