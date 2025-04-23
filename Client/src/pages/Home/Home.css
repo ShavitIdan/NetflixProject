@@ -89,8 +89,8 @@
 
 /* Content Rows */
 .content-rows {
+  margin-top: 50px;
   padding: 0 60px;
-  margin-top: -100px;
   position: relative;
   z-index: 2;
 }

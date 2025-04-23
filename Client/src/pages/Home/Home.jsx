@@ -6,7 +6,8 @@ import Footer from '../../components/Footer/Footer'
 import hero from '../../assets/cover.png'
 import heroOverlay from '../../assets/cover_hover.png'
 import coverHover from '../../assets/only_on_hover2.png'
-// todo
+import Logo from '../../assets/Logo2.png'
+
 const Home = () => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -36,44 +37,8 @@ const Home = () => {
 
   return (
     <div className='home'>
-      <header className="home-header">
-        <div className="header-left">
-          <Link to="/" className="netflix-logo">
-            <img src="/netflix-logo.png" alt="Netflix" />
-          </Link>
-          <nav className="main-nav">
-            <Link to="/">Home</Link>
-            <Link to="/tv-shows">TV Shows</Link>
-            <Link to="/movies">Movies</Link>
-            <Link to="/new">New & Popular</Link>
-            <Link to="/my-list">My List</Link>
-          </nav>
-        </div>
-        <div className="header-right">
-          <button className="search-button">
-            <i className="fas fa-search"></i>
-          </button>
-          <div className="profile-menu">
-            <button 
-              className="profile-button"
-              onClick={() => setShowProfileMenu(!showProfileMenu)}
-            >
-              <img src="/profile-icon.png" alt="Profile" />
-            </button>
-            {showProfileMenu && (
-              <div className="profile-dropdown">
-                <Link to="/profiles">Manage Profiles</Link>
-                <Link to="/account">Account</Link>
-                <Link to="/help">Help Center</Link>
-                <button className="sign-out">Sign out of Netflix</button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
-
+      <Navbar />
       <main className="home-content">
-        <Navbar/>
         <div className="hero">
           <img src={hero} alt="" className='hero-banner' />
           <div className="hero-overlay">
