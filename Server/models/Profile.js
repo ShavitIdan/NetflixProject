@@ -11,13 +11,30 @@ const profileSchema = new mongoose.Schema({
     default: 'default-avatar.png'
   },
   savedVideos: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Video'
+    id: {
+      type: String,
+      required: true
+    },
+    title: {
+      type: String,
+      required: true
+    },
+    poster_path: String,
+    backdrop_path: String,
+    overview: String
   }],
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+  reviews: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Review'
+  }],
+  isSelected: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

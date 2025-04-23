@@ -77,8 +77,20 @@ const Profile = () => {
     }
   };
 
-  const handleProfileClick = (profile) => {
-    setSelectedProfile(profile);
+  const handleProfileClick = async (profile) => {
+    try {
+      setError(null);
+      const response = await profileService.selectProfile(profile.id);
+      if (response.success) {
+        setSelectedProfile(profile);
+        navigate('/');
+      } else {
+        throw new Error(response.message || 'Failed to select profile');
+      }
+    } catch (error) {
+      console.error('Error selecting profile:', error);
+      setError(error.message || 'Failed to select profile. Please try again.');
+    }
   };
 
   const handleEditClick = (profile) => {
@@ -86,8 +98,8 @@ const Profile = () => {
     setNewName(profile.name);
   };
 
-  const handleNameChange = (value) => {
-    setNewName(value);
+  const handleNameChange = (e) => {
+    setNewName(e.target.value);
   };
 
   const handleNameSubmit = async (profileId, e) => {
@@ -114,6 +126,7 @@ const Profile = () => {
         } : p
       ));
       setEditingProfile(null);
+      setNewName(''); // Reset the new name after successful update
     } catch (error) {
       console.error('Error updating profile:', error);
       setError(error.response?.data?.message || 'Failed to update profile name. Please try again.');

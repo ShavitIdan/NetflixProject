@@ -69,6 +69,35 @@ const profileService = {
       console.error('Error deleting profile:', error);
       throw error;
     }
+  },
+
+  selectProfile: async (profileId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await axios.post(
+        `${API_ENDPOINTS.PROFILE.SELECT}/${profileId}`,
+        {},
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.data) {
+        throw new Error('Invalid response format from server');
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error('Error selecting profile:', error);
+      throw error;
+    }
   }
 };
 

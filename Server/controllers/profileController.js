@@ -94,21 +94,149 @@ exports.deleteProfile = async (req, res) => {
   }
 };
 
+exports.selectProfile = async (req, res) => {
+  try {
+    const { profileId } = req.params;
+    const userId = req.user._id;
+
+    // First, unselect all profiles for this user
+    await Profile.updateMany(
+      { user: userId },
+      { isSelected: false }
+    );
+
+    // Then select the requested profile
+    const profile = await Profile.findOneAndUpdate(
+      { _id: profileId, user: userId },
+      { isSelected: true },
+      { new: true }
+    );
+
+    if (!profile) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Profile not found' 
+      });
+    }
+
+    res.status(200).json({ 
+      success: true,
+      message: 'Profile selected successfully',
+      profile 
+    });
+  } catch (error) {
+    console.error('Error selecting profile:', error);
+    res.status(500).json({ 
+      success: false,
+      message: error.message 
+    });
+  }
+};
+
 exports.getUserProfiles = async (req, res) => {
   try {
     const userId = req.user._id;
 
     // Get all profiles for the user
-    const profiles = await Profile.find({ user: userId }, 'name avatar');
+    const profiles = await Profile.find({ user: userId });
 
     res.json({
       profiles: profiles.map(profile => ({
+        id: profile._id,
         name: profile.name,
         avatar: profile.avatar,
-        id: profile._id
+        isSelected: profile.isSelected
       }))
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}; 
+};
+
+exports.saveVideo = async (req, res) => {
+  try {
+    const { videoId, title, poster_path, backdrop_path, overview } = req.body;
+    const userId = req.user._id;
+
+    if (!videoId) {
+      return res.status(400).json({ message: 'Video ID is required' });
+    }
+
+    // Find the selected profile for the user
+    const profile = await Profile.findOne({ user: userId, isSelected: true });
+    if (!profile) {
+      return res.status(404).json({ message: 'No selected profile found' });
+    }
+
+    // Check if video is already saved
+    const existingVideo = profile.savedVideos.find(v => v.id === videoId);
+    if (existingVideo) {
+      return res.status(200).json({ 
+        success: true,
+        message: 'Video already saved',
+        profile 
+      });
+    }
+
+    // Add video to savedVideos array with full details
+    profile.savedVideos.push({
+      id: videoId,
+      title,
+      poster_path,
+      backdrop_path,
+      overview
+    });
+    await profile.save();
+
+    res.status(200).json({ 
+      success: true,
+      message: 'Video saved successfully',
+      profile 
+    });
+  } catch (error) {
+    console.error('Error saving video:', error);
+    res.status(500).json({ 
+      success: false,
+      message: error.message 
+    });
+  }
+};
+
+exports.removeVideo = async (req, res) => {
+  try {
+    const { videoId } = req.body;
+    const userId = req.user._id;
+
+    if (!videoId) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Video ID is required' 
+      });
+    }
+
+    // Find the selected profile for the user
+    const profile = await Profile.findOne({ user: userId, isSelected: true });
+    if (!profile) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'No selected profile found' 
+      });
+    }
+
+    // Remove video from savedVideos array
+    profile.savedVideos = profile.savedVideos.filter(v => v.id.toString() !== videoId.toString());
+    await profile.save();
+
+    res.status(200).json({ 
+      success: true,
+      message: 'Video removed successfully',
+      profile 
+    });
+  } catch (error) {
+    console.error('Error removing video:', error);
+    res.status(500).json({ 
+      success: false,
+      message: error.message 
+    });
+  }
+};

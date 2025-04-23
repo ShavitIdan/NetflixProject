@@ -1,21 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const profileController = require('../controllers/profileController');
 const auth = require('../middleware/auth');
+const {
+  getUserProfiles,
+  createProfile,
+  updateProfile,
+  deleteProfile,
+  saveVideo,
+  removeVideo,
+  selectProfile
+} = require('../controllers/profileController');
 
-// All routes require authentication
-router.use(auth);
-
-// Get all profiles for the current user
-router.get('/', profileController.getUserProfiles);
+// Get all profiles for the authenticated user
+router.get('/', auth, getUserProfiles);
 
 // Create a new profile
-router.post('/', profileController.createProfile);
+router.post('/', auth, createProfile);
 
 // Update a profile
-router.put('/:profileId', profileController.updateProfile);
+router.put('/:profileId', auth, updateProfile);
 
 // Delete a profile
-router.delete('/:profileId', profileController.deleteProfile);
+router.delete('/:profileId', auth, deleteProfile);
+
+// Select a profile
+router.post('/select/:profileId', auth, selectProfile);
+
+// Save video to profile
+router.post('/save-video', auth, saveVideo);
+
+// Remove video from profile
+router.post('/remove-video', auth, removeVideo);
 
 module.exports = router; 

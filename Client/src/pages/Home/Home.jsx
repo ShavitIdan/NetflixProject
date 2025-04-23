@@ -10,6 +10,9 @@ import coverHover from '../../assets/only_on_hover2.png'
 import Logo from '../../assets/Logo2.png'
 import tmdbService from '../../services/tmdbService'
 import { FaChevronLeft, FaChevronRight, FaInfo } from 'react-icons/fa'
+import axios from 'axios'
+import { API_ENDPOINTS } from '../../config/api'
+import VideoDetailsPopup from '../../components/VideoDetailsPopup/VideoDetailsPopup'
 
 const Home = () => {
   const { isAuth, selectedProfile } = useAuthContext();
@@ -25,6 +28,7 @@ const Home = () => {
   const [carouselItems, setCarouselItems] = useState([]);
   const carouselRef = useRef(null);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState(null);
 
   // Function to generate random match percentage
   const getRandomMatch = () => {
@@ -286,6 +290,77 @@ const Home = () => {
     }
   };
 
+  const handleVideoClick = async (item) => {
+    try {
+      console.log('Clicked video item:', item);
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      // First, try to get the video from our database
+      try {
+        const getResponse = await axios.get(
+          `${API_ENDPOINTS.VIDEO.GET_DETAILS}/${item.id}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        console.log('Existing video found:', getResponse.data);
+        setSelectedVideo({
+          ...item,
+          ...getResponse.data
+        });
+      } catch (getError) {
+        // If video doesn't exist, create it
+        if (getError.response?.status === 404) {
+          console.log('Video not found, creating new one');
+          const createResponse = await axios.post(
+            API_ENDPOINTS.VIDEO.CREATE,
+            {
+              videoId: item.id,
+              title: item.title || item.name
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+
+          console.log('New video created:', createResponse.data);
+          setSelectedVideo({
+            ...item,
+            ...createResponse.data
+          });
+        } else {
+          throw getError;
+        }
+      }
+    } catch (error) {
+      console.error('Error handling video click:', error);
+      // If there's an error, still show the popup with just the TMDB data
+      setSelectedVideo({
+        ...item,
+        title: item.title || item.name,
+        backdrop_path: item.backdrop_path,
+        overview: item.overview,
+        media_type: item.media_type
+      });
+    }
+  };
+
+  const handleClosePopup = () => {
+    setSelectedVideo(null);
+  };
+
   if (!selectedProfile) {
     return null;
   }
@@ -375,7 +450,7 @@ const Home = () => {
                     <div 
                       key={i} 
                       className="thumbnail-wrapper"
-                      onClick={() => navigate(`/details/${item.id}?type=${item.media_type}`)}
+                      onClick={() => handleVideoClick(item)}
                       onMouseEnter={() => setHoveredItem(item.id)}
                     >
                       <div className="thumbnail">
@@ -386,9 +461,9 @@ const Home = () => {
                         />
                         <div className="thumbnail-info">
                           <div className="thumbnail-controls">
-                            <button><FaInfo /></button>
-                            <button>+</button>
-                            <button>👍</button>
+                            <button className="info-button">
+                              <FaInfo />
+                            </button>
                           </div>
                           <h3>{item.title}</h3>
                           <div className="metadata">
@@ -412,6 +487,12 @@ const Home = () => {
         </div>
       </main>
       <Footer />
+      {selectedVideo && (
+        <VideoDetailsPopup 
+          video={selectedVideo} 
+          onClose={handleClosePopup} 
+        />
+      )}
     </div>
   );
 };
