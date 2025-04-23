@@ -54,7 +54,8 @@ const Home = () => {
             fetchMultiplePages(tmdbService.getMostViewedInIsrael, 5),
             fetchMultiplePages(tmdbService.getTopRated, 5),
             fetchMultiplePages(tmdbService.getAnimatedContent, 5),
-            fetchMultiplePages(tmdbService.getActionContent, 5)
+            fetchMultiplePages(tmdbService.getActionContent, 5),
+            fetchMultiplePages(tmdbService.getNewestContent, 5) // For Last Added to My List
           ];
         } else if (location.pathname === '/tv') {
           contentPromises = [
@@ -62,7 +63,8 @@ const Home = () => {
             fetchMultiplePages(tmdbService.getTrendingTVShows, 10),
             fetchMultiplePages(tmdbService.getTopRatedTVShows, 10),
             fetchMultiplePages(tmdbService.getAnimatedTVShows, 10),
-            fetchMultiplePages(tmdbService.getActionTVShows, 10)
+            fetchMultiplePages(tmdbService.getActionTVShows, 10),
+            fetchMultiplePages(tmdbService.getNewestTVShows, 10) // For Last Added to My List
           ];
         } else {
           contentPromises = [
@@ -70,24 +72,27 @@ const Home = () => {
             fetchMultiplePages(tmdbService.getMostViewedInIsrael, 5),
             fetchMultiplePages(tmdbService.getTopRated, 5),
             fetchMultiplePages(tmdbService.getAnimatedContent, 5),
-            fetchMultiplePages(tmdbService.getActionContent, 5)
+            fetchMultiplePages(tmdbService.getActionContent, 5),
+            fetchMultiplePages(tmdbService.getNewestContent, 5) // For Last Added to My List
           ];
         }
 
         const [
+          matchedContent,
           newestContent,
-          mostViewedContent,
-          topRatedContent,
-          animatedContent,
-          actionContent
+          topIsraelContent,
+          lastReviewedContent,
+          mostPopularContent,
+          lastAddedContent
         ] = await Promise.all(contentPromises);
 
         setAllContent({
+          matchedContent,
           newestContent,
-          mostViewedContent,
-          topRatedContent,
-          animatedContent,
-          actionContent
+          topIsraelContent,
+          lastReviewedContent,
+          mostPopularContent,
+          lastAddedContent
         });
       } catch (error) {
         console.error('Error fetching content:', error);
@@ -107,36 +112,40 @@ const Home = () => {
     if (!allContent) return;
 
     const {
+      matchedContent,
       newestContent,
-      mostViewedContent,
-      topRatedContent,
-      animatedContent,
-      actionContent
+      topIsraelContent,
+      lastReviewedContent,
+      mostPopularContent,
+      lastAddedContent
     } = allContent;
 
     // Set titles based on route
     const sectionTitles = location.pathname === '/movies' 
       ? {
-          newest: "New Movies",
-          mostViewed: "Trending Movies",
-          topRated: "Top Rated Movies",
-          animated: "Animated Movies",
-          action: "Action Movies"
+          matched: "Matched to You",
+          newest: "New on Tenflix",
+          topIsrael: "Top 10 in Israel",
+          lastReviewed: "Last Reviewed",
+          mostPopular: "Most Popular",
+          lastAdded: "Last Added to My List"
         }
       : location.pathname === '/tv'
         ? {
-            newest: "New TV Shows",
-            mostViewed: "Trending TV Shows",
-            topRated: "Top Rated TV Shows",
-            animated: "Animated Series",
-            action: "Action & Adventure Series"
+            matched: "Matched to You",
+            newest: "New on Tenflix",
+            topIsrael: "Top 10 in Israel",
+            lastReviewed: "Last Reviewed",
+            mostPopular: "Most Popular",
+            lastAdded: "Last Added to My List"
           }
         : {
-            newest: "New Releases",
-            mostViewed: "Most Viewed in Israel",
-            topRated: "Top Rated",
-            animated: "Animated",
-            action: "Action"
+            matched: "Matched to You",
+            newest: "New on Tenflix",
+            topIsrael: "Top 10 in Israel",
+            lastReviewed: "Last Reviewed",
+            mostPopular: "Most Popular",
+            lastAdded: "Last Added to My List"
           };
 
     // Helper function to format and filter content items
@@ -170,24 +179,36 @@ const Home = () => {
     // Set content rows with proper filtering
     const rows = [
       {
+        title: sectionTitles.matched,
+        items: formatContentItems(matchedContent)
+      },
+      {
         title: sectionTitles.newest,
         items: formatContentItems(newestContent)
       },
       {
-        title: sectionTitles.mostViewed,
-        items: formatContentItems(mostViewedContent)
+        title: sectionTitles.topIsrael,
+        items: formatContentItems(topIsraelContent)
       },
       {
-        title: sectionTitles.topRated,
-        items: formatContentItems(topRatedContent)
+        title: sectionTitles.lastReviewed,
+        items: formatContentItems(lastReviewedContent)
       },
       {
-        title: sectionTitles.animated,
-        items: formatContentItems(animatedContent)
+        title: sectionTitles.mostPopular,
+        items: formatContentItems(mostPopularContent)
       },
       {
-        title: sectionTitles.action,
-        items: formatContentItems(actionContent)
+        title: "Animation",
+        items: formatContentItems(newestContent) // Using newest content for Animation
+      },
+      {
+        title: "Action",
+        items: formatContentItems(newestContent) // Using newest content for Action
+      },
+      {
+        title: sectionTitles.lastAdded,
+        items: formatContentItems(lastAddedContent)
       }
     ];
 
