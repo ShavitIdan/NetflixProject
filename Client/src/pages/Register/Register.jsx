@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import coverPhoto from '../../assets/coverphoto.png';
+import Logo from '../../assets/Logo2.png';
+import Footer from '../../components/Footer/Footer';
 import './Register.css';
-import { authService } from '../../services/authService';
 
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    confirmPassword: '',
-    phone: '',
     role: 'user'
   });
   const [errors, setErrors] = useState({});
@@ -20,7 +20,6 @@ const Register = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -28,72 +27,50 @@ const Register = () => {
 
   const validateForm = () => {
     const newErrors = {};
-  
+    
     if (!formData.email) {
-      newErrors.email = 'Email is required.';
+      newErrors.email = 'Please enter a valid email.';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address.';
     }
-  
+
     if (!formData.password) {
-      newErrors.password = 'Password is required.';
-    } else if (
-      formData.password.length < 8 ||
-      !/[A-Z]/.test(formData.password) ||
-      !/\d/.test(formData.password)
-    ) {
-      newErrors.password = 'Password must be at least 8 characters, include one uppercase letter and one digit.';
+      newErrors.password = 'Your password must contain between 4 and 60 characters.';
+    } else if (formData.password.length < 4 || formData.password.length > 60) {
+      newErrors.password = 'Your password must contain between 4 and 60 characters.';
     }
-  
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match.';
-    }
-  
-    if (!formData.phone) {
-      newErrors.phone = 'Phone number is required.';
-    } else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
-      newErrors.phone = 'Please enter a valid 10-digit phone number.';
-    }
-  
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-  
-    if (!validateForm()) return;
-  
-    try {
-      const data = await authService.register(formData.email, formData.password);
-  
-      console.log('Registration successful:', data);
-      navigate('/login');
-    } catch (error) {
-      console.error('Registration failed:', error.message);
-      setErrors(prev => ({
-        ...prev,
-        email: 'Registration failed. Email might be in use or invalid.'
-      }));
+    if (validateForm()) {
+      console.log('Register form submitted:', formData);
+      navigate('/profiles');
     }
   };
-  
+
   return (
     <div className="register-container">
-      <div className="register-background">
-        <img src="/netflix-background.jpg" alt="" />
+      <div className="register-background" style={{ backgroundImage: `url(${coverPhoto})` }}>
         <div className="background-gradient" />
       </div>
 
       <header className="register-header">
-        <img src="/netflix-logo.png" alt="Netflix" className="netflix-logo" />
-        <Link to="/login" className="signin-link">Sign In</Link>
+        <Link to="/" className="logo-link">
+          <img 
+            src={Logo} 
+            alt="Tenflix" 
+            className="tenflix-logo"
+          />
+        </Link>
       </header>
 
       <main className="register-content">
         <div className="register-form-container">
-          <h1>Create Account</h1>
+          <h1>Sign Up</h1>
           <form onSubmit={handleSubmit} className="register-form">
             <div className="form-group">
               <input
@@ -101,7 +78,7 @@ const Register = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Email address"
+                placeholder="Email"
                 className={errors.email ? 'error' : ''}
               />
               {errors.email && <span className="error-message">{errors.email}</span>}
@@ -113,34 +90,10 @@ const Register = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Add a password"
+                placeholder="Password"
                 className={errors.password ? 'error' : ''}
               />
               {errors.password && <span className="error-message">{errors.password}</span>}
-            </div>
-
-            <div className="form-group">
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Confirm password"
-                className={errors.confirmPassword ? 'error' : ''}
-              />
-              {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
-            </div>
-
-            <div className="form-group">
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="Phone number"
-                className={errors.phone ? 'error' : ''}
-              />
-              {errors.phone && <span className="error-message">{errors.phone}</span>}
             </div>
 
             <div className="form-group">
@@ -155,17 +108,16 @@ const Register = () => {
               </select>
             </div>
 
-            <button type="submit" className="register-button">Create Account</button>
-          </form>
+            <button type="submit" className="register-button">Sign Up</button>
 
-          <div className="register-footer">
-            <small className="recaptcha-terms">
-              This page is protected by Google reCAPTCHA to ensure you're not a bot. 
-              <a href="#"> Learn more.</a>
-            </small>
-          </div>
+            <div className="login-link">
+              <span>Already have an account?</span>
+              <Link to="/login">Sign in now</Link>
+            </div>
+          </form>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };
