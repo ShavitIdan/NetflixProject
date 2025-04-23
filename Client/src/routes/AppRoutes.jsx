@@ -1,11 +1,14 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuthContext } from '../context/AuthContext';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
+import Profile from '../pages/Profile';
+import { isAuthenticated } from '../utils/tokenUtils';
 
 const PrivateRoute = ({ children }) => {
-  const { isAuthenticated } = useAuthContext();
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
 };
 
 const AppRoutes = () => {
@@ -14,11 +17,18 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <Profile />
+          </PrivateRoute>
+        }
+      />
+      <Route
         path="/"
         element={
           <PrivateRoute>
-            {/* Your protected home component */}
-            <div>Home Page</div>
+            <Navigate to="/profile" replace />
           </PrivateRoute>
         }
       />
