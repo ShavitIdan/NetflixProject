@@ -4,7 +4,7 @@ const User = require('../models/User');
 exports.createProfile = async (req, res) => {
   try {
     const { name, avatar } = req.body;
-    const userId = req.user.userId;
+    const userId = req.user._id;
 
     // Check if user exists and get their current profile count
     const user = await User.findById(userId);
@@ -46,7 +46,7 @@ exports.updateProfile = async (req, res) => {
   try {
     const { name, avatar } = req.body;
     const { profileId } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user._id;
 
     // Find and update profile
     const profile = await Profile.findOneAndUpdate(
@@ -74,7 +74,7 @@ exports.updateProfile = async (req, res) => {
 exports.deleteProfile = async (req, res) => {
   try {
     const { profileId } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user._id;
 
     // Find and delete profile
     const profile = await Profile.findOneAndDelete({ _id: profileId, user: userId });
@@ -95,7 +95,7 @@ exports.deleteProfile = async (req, res) => {
 
 exports.getUserProfiles = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user._id;
 
     // Get all profiles for the user
     const profiles = await Profile.find({ user: userId }, 'name avatar');
