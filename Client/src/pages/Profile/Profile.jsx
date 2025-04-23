@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../../context/AuthContext';
 import coverPhoto from '../../assets/coverphoto.png';
 import Logo from '../../assets/Logo2.png';
 import Footer from '../../components/Footer/Footer';
 import ProfilePicture from '../../components/ProfilePicture/ProfilePicture';
 import profileService from '../../services/profileService';
-import { useAuthContext } from '../../context/AuthContext';
 import './Profile.css';
 
 // Import the profile avatar images
@@ -19,7 +19,7 @@ import user7 from '../../assets/users/user_7.png';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { setSelectedProfile } = useAuthContext();
+  const { isAuth, user, setSelectedProfile } = useAuthContext();
   const [profiles, setProfiles] = useState([]);
   const [editingProfile, setEditingProfile] = useState(null);
   const [newName, setNewName] = useState('');
@@ -35,6 +35,12 @@ const Profile = () => {
     { path: '/assets/users/user_6.png', image: user6 },
     { path: '/assets/users/user_7.png', image: user7 }
   ];
+
+  useEffect(() => {
+    if (!isAuth) {
+      navigate('/login');
+    }
+  }, [isAuth, navigate]);
 
   useEffect(() => {
     fetchProfiles();
@@ -56,7 +62,7 @@ const Profile = () => {
       const profilesWithAvatars = response.profiles.map(profile => {
         const avatarImage = availableAvatars.find(av => av.path === profile.avatar)?.image;
         return {
-          id: profile._id,
+          id: profile.id,
           name: profile.name,
           avatar: avatarImage || user1,
           avatarPath: profile.avatar
@@ -71,9 +77,14 @@ const Profile = () => {
     }
   };
 
-  const handleProfileClick = (profile) => {
-    setSelectedProfile(profile);
-    navigate('/home');
+  const handleProfileClick = async (profile) => {
+    try {
+      setSelectedProfile(profile);
+      navigate('/');
+    } catch (error) {
+      console.error('Error selecting profile:', error);
+      setError('Failed to select profile. Please try again.');
+    }
   };
 
   const handleEditClick = (profile) => {
@@ -143,7 +154,7 @@ const Profile = () => {
 
         const avatarImage = availableAvatars.find(av => av.path === response.profile.avatar)?.image;
         setProfiles([...profiles, { 
-          id: response.profile._id,
+          id: response.profile.id,
           name: response.profile.name,
           avatar: avatarImage || randomAvatar.image,
           avatarPath: response.profile.avatar

@@ -33,6 +33,7 @@ exports.createProfile = async (req, res) => {
     res.status(201).json({
       message: 'Profile created successfully',
       profile: {
+        id: profile._id,
         name: profile.name,
         avatar: profile.avatar
       }
@@ -103,7 +104,8 @@ exports.getUserProfiles = async (req, res) => {
     res.json({
       profiles: profiles.map(profile => ({
         name: profile.name,
-        avatar: profile.avatar
+        avatar: profile.avatar,
+        id: profile._id
       }))
     });
   } catch (error) {
