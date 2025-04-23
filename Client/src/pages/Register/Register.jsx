@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Register.css';
+import { authService } from '../../services/authService';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -27,46 +28,57 @@ const Register = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
-    // Email validation
+  
     if (!formData.email) {
       newErrors.email = 'Email is required.';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address.';
     }
-
-    // Password validation
+  
     if (!formData.password) {
       newErrors.password = 'Password is required.';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters long.';
+    } else if (
+      formData.password.length < 8 ||
+      !/[A-Z]/.test(formData.password) ||
+      !/\d/.test(formData.password)
+    ) {
+      newErrors.password = 'Password must be at least 8 characters, include one uppercase letter and one digit.';
     }
-
-    // Confirm password validation
+  
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match.';
     }
-
-    // Phone validation
+  
     if (!formData.phone) {
       newErrors.phone = 'Phone number is required.';
     } else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
       newErrors.phone = 'Please enter a valid 10-digit phone number.';
     }
-
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      // TODO: Implement actual registration logic
-      console.log('Registration form submitted:', formData);
-      navigate('/profiles'); // Navigate to profiles page after successful registration
+  
+    if (!validateForm()) return;
+  
+    try {
+      const data = await authService.register(formData.email, formData.password);
+  
+      console.log('Registration successful:', data);
+      navigate('/login');
+    } catch (error) {
+      console.error('Registration failed:', error.message);
+      setErrors(prev => ({
+        ...prev,
+        email: 'Registration failed. Email might be in use or invalid.'
+      }));
     }
   };
-
+  
   return (
     <div className="register-container">
       <div className="register-background">

@@ -4,6 +4,7 @@ import coverPhoto from '../../assets/coverphoto.png';
 import Logo from '../../assets/Logo2.png';
 import Footer from '../../components/Footer/Footer';
 import './Login.css';
+import { authService } from '../../services/authService';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -34,21 +35,34 @@ const Login = () => {
       newErrors.email = 'Please enter a valid email address.';
     }
 
-    if (!formData.password) {
-      newErrors.password = 'Your password must contain between 4 and 60 characters.';
+    if (!formData.password || formData.password.length < 8) {
+      newErrors.password = 'Your password must contain at least 8 characters.';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      console.log('Login form submitted:', formData);
-      navigate('/profiles'); 
+  
+    if (!validateForm()) return;
+  
+    try {
+      const data = await authService.login(formData.email, formData.password);
+  
+      console.log('Login successful:', data);
+  
+      navigate('/');
+    } catch (error) {
+      console.error('Login failed:', error.message);
+      setErrors(prev => ({
+        ...prev,
+        password: 'Invalid email or password.'
+      }));
     }
   };
+  
 
   return (
     <div className="login-container">
