@@ -17,7 +17,6 @@ const Login = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -26,14 +25,12 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {};
     
-    // Email validation
     if (!formData.email) {
       newErrors.email = 'Please enter a valid email.';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address.';
     }
 
-    // Password validation
     if (!formData.password) {
       newErrors.password = 'Your password must contain between 4 and 60 characters.';
     }
@@ -45,9 +42,8 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      // TODO: Implement actual login logic
       console.log('Login form submitted:', formData);
-      navigate('/profiles'); // Navigate to profiles page after successful login
+      navigate('/profiles'); 
     }
   };
 
