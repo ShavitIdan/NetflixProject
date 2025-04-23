@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import './Home.css'
-import Navbar from '../../compenents/Navbar/Navbar'
+import Navbar from '../../components/Navbar/Navbar'
 import Footer from '../../components/Footer/Footer'
 import hero from '../../assets/cover.png'
 import heroOverlay from '../../assets/cover_hover.png'
