@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import coverPhoto from '../../assets/coverphoto.png';
 import Logo from '../../assets/Logo2.png';
-import Footer from '../../compenents/Footer/Footer';
+import Footer from '../../components/Footer/Footer';
 import './Login.css';
 
 const Login = () => {
