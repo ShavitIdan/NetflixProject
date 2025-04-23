@@ -19,7 +19,9 @@
 
 .navbar-left img{
     width: 120px;
-    height: 180px;
+    height: auto;
+    object-fit: contain;
+    transform: scale(3.5);
 }
 
 .navbar-left ul{
