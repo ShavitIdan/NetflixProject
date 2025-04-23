@@ -5,15 +5,18 @@ import Logo from '../../assets/Logo2.png';
 import Footer from '../../components/Footer/Footer';
 import './Login.css';
 import { authService } from '../../services/authService';
+import { useAuthContext } from '../../context/AuthContext';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuthContext();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false
   });
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -48,11 +51,14 @@ const Login = () => {
   
     if (!validateForm()) return;
   
+    setIsLoading(true);
     try {
       const data = await authService.login(formData.email, formData.password);
-  
-      console.log('Login successful:', data);
-  
+      
+      // Store the token and update auth state
+      await login(data.token);
+      
+      // Redirect to home page
       navigate('/');
     } catch (error) {
       console.error('Login failed:', error.message);
@@ -60,9 +66,10 @@ const Login = () => {
         ...prev,
         password: 'Invalid email or password.'
       }));
+    } finally {
+      setIsLoading(false);
     }
   };
-  
 
   return (
     <div className="login-container">
@@ -102,7 +109,13 @@ const Login = () => {
               {errors.password && <span className="error-message">{errors.password}</span>}
             </div>
 
-            <button type="submit" className="login-button">Sign In</button>
+            <button 
+              type="submit" 
+              className="login-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Signing in...' : 'Sign In'}
+            </button>
 
             <div className="form-options">
               <label className="checkbox-container">

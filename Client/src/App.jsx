@@ -1,20 +1,25 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import PrivateRoute from './routes/PrivateRoute';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
-import Profile from './pages/Profile/Profile';
 import Home from './pages/Home/Home';
+import Profile from './pages/Profile/Profile';
 import './App.css';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/home" element={<Home />} />
-      <Route path="/" element={<Navigate to="/login" replace />} />
-    </Routes>
+    <AuthProvider>
+      <div className="App">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
+          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+        </Routes>
+      </div>
+    </AuthProvider>
   );
 }
 
