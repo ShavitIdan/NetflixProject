@@ -4,6 +4,8 @@ import Register from '../pages/Register';
 import Profile from '../pages/Profile';
 import { isAuthenticated } from '../utils/tokenUtils';
 import Home from '../pages/Home';
+import MovieDetails from '../pages/MovieDetails';
+
 const PrivateRoute = ({ children }) => {
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
@@ -29,6 +31,14 @@ const AppRoutes = () => {
         element={
           <PrivateRoute>
             <Home />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/details/:id"
+        element={
+          <PrivateRoute>
+            <MovieDetails />
           </PrivateRoute>
         }
       />

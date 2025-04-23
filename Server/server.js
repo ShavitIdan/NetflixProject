@@ -3,8 +3,9 @@ require("./config/db");
 const cors = require("cors");
 require('dotenv').config();
 
-const authRoutes = require('./routes/auth');
-const profileRoutes = require('./routes/profile');
+const authRoutes = require('./routes/authRoutes');
+const profileRoutes = require('./routes/profileRoutes');
+const tmdbRoutes = require('./routes/tmdbRoutes');
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(cors());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/profiles', profileRoutes);
+app.use('/api/tmdb', tmdbRoutes);
 
 app.get("/", (req, res) => res.send("Hello World!"));
 

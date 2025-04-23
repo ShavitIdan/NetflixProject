@@ -2,9 +2,8 @@ import React from 'react'
 import './Navbar.css'
 import logo from '../../assets/logo2.png'
 import { FaSearch, FaBell, FaCaretDown } from 'react-icons/fa';
-import user_1 from '../../assets/users/user_1.png'
 
-function Navbar() {
+function Navbar({ selectedProfile }) {
   return (
     <div className='navbar' >
       <div className="navbar-left">
@@ -22,7 +21,11 @@ function Navbar() {
         <div className="icons">{<FaSearch/>}</div>
         <div className="icons">{<FaBell/>}</div>
         <div className="navbar-profile">
-          <img src={user_1} alt="" className="profile" />
+          <img 
+            src={selectedProfile?.avatar || '../../assets/users/user_1.png'} 
+            alt={selectedProfile?.name || 'Profile'} 
+            className="profile" 
+          />
           {<FaCaretDown/>}
         </div>
       </div>

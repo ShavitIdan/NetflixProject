@@ -1,7 +1,206 @@
-.home-container {
-  background-color: #141414;
+.home {
   min-height: 100vh;
-  color: #fff;
+  background-color: #141414;
+  color: white;
+}
+
+.home-content {
+  padding-top: 60px;
+}
+
+.hero {
+  position: relative;
+  height: 70vh;
+  overflow: hidden;
+}
+
+.hero-banner {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+}
+
+.caption-img {
+  max-width: 400px;
+  margin-bottom: 1rem;
+}
+
+.hero-overlay p {
+  max-width: 500px;
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+.content-rows {
+  padding: 2rem;
+}
+
+.row {
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.row-title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.row-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.scroll-button {
+  position: absolute;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  width: 40px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.scroll-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.scroll-button.left {
+  left: 0;
+  border-radius: 4px 0 0 4px;
+}
+
+.scroll-button.right {
+  right: 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.thumbnails {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 1rem;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  flex: 1;
+}
+
+.thumbnails::-webkit-scrollbar {
+  display: none;
+}
+
+.thumbnail-wrapper {
+  flex: 0 0 auto;
+  width: 218px;
+  height: 123px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.thumbnail-wrapper:hover {
+  transform: scale(1.1);
+  z-index: 1;
+}
+
+.thumbnail {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.thumbnail-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnail-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.thumbnail-wrapper:hover .thumbnail-info {
+  opacity: 1;
+}
+
+.thumbnail-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.thumbnail-controls button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.thumbnail-controls button:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.metadata {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.match {
+  color: #46d369;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 60px);
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #e50914;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Header Styles */
@@ -57,162 +256,6 @@
   font-size: 20px;
 }
 
-/* Hero Section */
-.hero {
-  position: relative;
-}
-
-.hero-banner {
-  width: 100%;
-  mask-image: linear-gradient(to right, transparent, black 75%);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 75%);
-}
-
-.hero-overlay {
-  position: absolute;
-  width: 100%;
-  padding-left: 6%;
-  bottom: 0;
-}
-
-.caption-img {
-  width: 90%;
-  max-width: 420px;
-  margin-bottom: 30px;
-}
-
-.hero-overlay p {
-  max-width: 700px;
-  font-size: 17px;
-  margin-bottom: 20px;
-}
-
-/* Content Rows */
-.content-rows {
-  margin-top: 50px;
-  padding: 0 60px;
-  position: relative;
-  z-index: 2;
-}
-
-.row {
-  margin-bottom: 40px;
-}
-
-.row-title {
-  font-size: 1.4vw;
-  margin-bottom: 10px;
-  color: #e5e5e5;
-}
-
-.thumbnails {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 20px 0;
-  scroll-behavior: smooth;
-}
-
-.thumbnails::-webkit-scrollbar {
-  display: none;
-}
-
-.thumbnail-wrapper {
-  flex: 0 0 auto;
-  width: 16.66%;
-  transition: transform 0.3s ease;
-}
-
-.thumbnail {
-  position: relative;
-  padding-top: 56.25%; /* 16:9 Aspect Ratio */
-  background-color: #333;
-}
-
-.thumbnail-img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-}
-
-.thumbnail-info {
-  display: none;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #181818;
-  padding: 10px;
-  border-radius: 0 0 4px 4px;
-}
-
-.thumbnail-wrapper:hover {
-  transform: scale(1.5);
-  z-index: 99;
-}
-
-.thumbnail-wrapper:hover .thumbnail-info {
-  display: block;
-}
-
-.thumbnail-controls {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.thumbnail-controls button {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  background: rgba(0,0,0,0.5);
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.thumbnail-controls button:first-child {
-  background: #fff;
-  color: #000;
-}
-
-.metadata {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 8px 0;
-  font-size: 14px;
-}
-
-.match {
-  color: #46d369;
-  font-weight: bold;
-}
-
-.rating {
-  border: 1px solid rgba(255,255,255,0.4);
-  padding: 1px 4px;
-}
-
-.genres {
-  display: flex;
-  gap: 8px;
-  font-size: 12px;
-  color: #fff;
-}
-
-.genres span:not(:last-child)::after {
-  content: "•";
-  margin-left: 8px;
-}
-
 /* Responsive Design */
 @media (max-width: 1200px) {
   .thumbnail-wrapper {
@@ -240,11 +283,16 @@
   }
   
   .thumbnail-wrapper {
-    width: 33.33%;
+    width: 174px;
+    height: 98px;
+  }
+  
+  .scroll-button {
+    width: 30px;
   }
   
   .hero-overlay {
-    padding-left: 20px;
+    padding: 1rem;
   }
   
   .caption-img {
@@ -252,6 +300,17 @@
   }
   
   .hero-overlay p {
-    font-size: 14px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .thumbnail-wrapper {
+    width: 131px;
+    height: 74px;
+  }
+
+  .row-title {
+    font-size: 1.2rem;
   }
 }
