@@ -24,6 +24,12 @@ const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [carouselItems, setCarouselItems] = useState([]);
   const carouselRef = useRef(null);
+  const [hoveredItem, setHoveredItem] = useState(null);
+
+  // Function to generate random match percentage
+  const getRandomMatch = () => {
+    return Math.floor(Math.random() * (100 - 65 + 1)) + 65;
+  };
 
   // Fetch all content once when component mounts
   useEffect(() => {
@@ -175,7 +181,8 @@ const Home = () => {
         poster: item.poster_path,
         backdrop: item.backdrop_path,
         overview: item.overview,
-        media_type: item.media_type
+        media_type: item.media_type,
+        match: getRandomMatch()
       }));
     };
 
@@ -203,11 +210,11 @@ const Home = () => {
       },
       {
         title: "Animation",
-        items: formatContentItems(newestContent) // Using newest content for Animation
+        items: formatContentItems(newestContent)
       },
       {
         title: "Action",
-        items: formatContentItems(newestContent) // Using newest content for Action
+        items: formatContentItems(newestContent)
       },
       {
         title: sectionTitles.lastAdded,
@@ -227,7 +234,8 @@ const Home = () => {
             poster: '',
             backdrop: '',
             overview: '',
-            media_type: location.pathname === '/tv' ? 'tv' : 'movie'
+            media_type: location.pathname === '/tv' ? 'tv' : 'movie',
+            match: getRandomMatch()
           })]
     }));
 
@@ -368,6 +376,7 @@ const Home = () => {
                       key={i} 
                       className="thumbnail-wrapper"
                       onClick={() => navigate(`/details/${item.id}?type=${item.media_type}`)}
+                      onMouseEnter={() => setHoveredItem(item.id)}
                     >
                       <div className="thumbnail">
                         <img 
@@ -383,7 +392,7 @@ const Home = () => {
                           </div>
                           <h3>{item.title}</h3>
                           <div className="metadata">
-                            <span className="match">98% Match</span>
+                            <span className="match">{item.match}% Match</span>
                             <span className="rating">{item.rating}</span>
                           </div>
                         </div>
