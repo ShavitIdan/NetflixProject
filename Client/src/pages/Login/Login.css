@@ -1,58 +1,67 @@
 .login-container {
-  min-height: 100vh;
   position: relative;
-  background-color: #000;
+  min-height: 100vh;
+  background-color: transparent;
+  color: #fff;
+  overflow: hidden;
 }
 
 .login-background {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -2;
 }
 
 .login-background img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.background-gradient {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  background-image: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.8) 0,
-    rgba(0, 0, 0, 0) 60%,
-    rgba(0, 0, 0, 0.8) 100%
+}
+
+.background-gradient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.3) 50%,
+    rgba(0, 0, 0, 0.7) 100%
   );
+  z-index: -1;
 }
 
 .login-header {
+  padding: 20px;
   position: relative;
-  padding: 24px 48px;
   z-index: 1;
 }
 
-.netflix-logo {
+.tenflix-logo {
   height: 45px;
   width: auto;
+  cursor: pointer;
 }
 
 .login-content {
   position: relative;
   z-index: 1;
-  min-height: calc(100vh - 93px);
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 0 48px;
+  align-items: center;
+  min-height: calc(100vh - 85px);
+  padding: 20px;
 }
 
 .login-form-container {
@@ -64,29 +73,27 @@
 }
 
 .login-form-container h1 {
-  color: #fff;
+  margin-bottom: 28px;
   font-size: 32px;
   font-weight: 500;
-  margin-bottom: 28px;
 }
 
 .form-group {
   margin-bottom: 16px;
+  position: relative;
 }
 
-.form-group input {
+input {
   width: 100%;
-  height: 50px;
-  background: #333;
-  border-radius: 4px;
-  border: none;
   padding: 16px 20px;
+  background: #333;
+  border: none;
+  border-radius: 4px;
   color: #fff;
   font-size: 16px;
-  outline: none;
 }
 
-.form-group input.error {
+input.error {
   border-bottom: 2px solid #e87c03;
 }
 
@@ -97,22 +104,17 @@
   display: block;
 }
 
-.form-group input::placeholder {
-  color: #8c8c8c;
-}
-
 .login-button {
   width: 100%;
-  height: 50px;
+  padding: 16px;
   background: #e50914;
   color: #fff;
-  font-size: 16px;
-  font-weight: 500;
   border: none;
   border-radius: 4px;
-  margin: 24px 0 12px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 24px;
   cursor: pointer;
-  transition: background-color 0.2s;
 }
 
 .login-button:hover {
@@ -123,6 +125,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 12px;
   color: #b3b3b3;
   font-size: 13px;
 }
@@ -130,14 +133,7 @@
 .checkbox-container {
   display: flex;
   align-items: center;
-  gap: 4px;
-  cursor: pointer;
-}
-
-.checkbox-container input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
+  gap: 8px;
 }
 
 .help-link {
@@ -149,52 +145,33 @@
   text-decoration: underline;
 }
 
-.login-footer {
-  margin-top: 60px;
+.signup-link {
+  margin-top: 16px;
   color: #737373;
+  font-size: 16px;
 }
 
-.signup-link {
+.signup-link a {
   color: #fff;
   text-decoration: none;
+  margin-left: 8px;
 }
 
-.signup-link:hover {
-  text-decoration: underline;
-}
-
-.recaptcha-terms {
-  display: block;
-  margin-top: 11px;
-  font-size: 13px;
-  color: #8c8c8c;
-}
-
-.recaptcha-terms a {
-  color: #0071eb;
-  text-decoration: none;
-}
-
-.recaptcha-terms a:hover {
+.signup-link a:hover {
   text-decoration: underline;
 }
 
 @media (max-width: 740px) {
-  .login-header {
-    padding: 24px;
+  .login-background {
+    display: none;
   }
 
-  .netflix-logo {
-    height: 32px;
-  }
-
-  .login-content {
-    padding: 0 24px;
-    min-height: calc(100vh - 80px);
+  .login-container {
+    background: #000;
   }
 
   .login-form-container {
-    padding: 30px 20px;
-    background: transparent;
+    padding: 20px;
+    max-width: 100%;
   }
 }

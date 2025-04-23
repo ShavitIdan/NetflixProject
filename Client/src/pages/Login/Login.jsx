@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import coverPhoto from '../../assets/coverphoto.png';
+import Logo from '../../assets/Logo2.png';
+import Footer from '../../components/Footer/Footer';
 import './Login.css';
 
 const Login = () => {
@@ -49,13 +52,12 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <div className="login-background">
-        <img src="/netflix-background.jpg" alt="" />
+      <div className="login-background" style={{ backgroundImage: `url(${coverPhoto})` }}>
         <div className="background-gradient" />
       </div>
 
       <header className="login-header">
-        <img src="/netflix-logo.png" alt="Netflix" className="netflix-logo" />
+        <img src={Logo} alt="Tenflix" className="tenflix-logo" />
       </header>
 
       <main className="login-content">
@@ -102,15 +104,13 @@ const Login = () => {
             </div>
           </form>
 
-          <div className="login-footer">
-            <p>New to Netflix? <Link to="/register" className="signup-link">Sign up now</Link></p>
-            <small className="recaptcha-terms">
-              This page is protected by Google reCAPTCHA to ensure you're not a bot. 
-              <a href="#"> Learn more.</a>
-            </small>
+          <div className="signup-link">
+            <span>New to Netflix?</span>
+            <Link to="/register">Sign up now</Link>
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };
