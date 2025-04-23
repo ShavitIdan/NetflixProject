@@ -1,0 +1,96 @@
+.profile-picture-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.profile-picture-container:hover {
+  transform: scale(1.05);
+}
+
+.profile-avatar {
+  position: relative;
+  width: 10vw;
+  height: 10vw;
+  min-width: 84px;
+  min-height: 84px;
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.6em;
+  border: 3px solid transparent;
+}
+
+.profile-avatar:hover {
+  border-color: #fff;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.delete-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  font-size: 20px;
+  cursor: pointer;
+  display: none;
+}
+
+.profile-picture-container:hover .delete-button {
+  display: block;
+}
+
+.profile-name {
+  color: #808080;
+  font-size: 1.3vw;
+  text-align: center;
+  margin-top: 0.6em;
+}
+
+.profile-name:hover {
+  color: #fff;
+}
+
+.profile-name-input-container {
+  width: 100%;
+  margin-top: 0.6em;
+}
+
+.profile-name-input {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #fff;
+  color: #fff;
+  font-size: 1.3vw;
+  text-align: center;
+  width: 100%;
+  padding: 0.3em;
+}
+
+.profile-name-input:focus {
+  outline: none;
+}
+
+@media (max-width: 740px) {
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .profile-name {
+    font-size: 16px;
+  }
+} 

@@ -17,6 +17,7 @@ const Login = () => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [serverError, setServerError] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -26,6 +27,9 @@ const Login = () => {
     }));
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+    if (serverError) {
+      setServerError('');
     }
   };
 
@@ -52,16 +56,26 @@ const Login = () => {
     if (!validateForm()) return;
   
     setIsLoading(true);
+    setServerError('');
+    
     try {
-      const data = await authService.login(formData.email, formData.password);
+      console.log('Attempting login with:', formData.email);
+      const response = await authService.login(formData.email, formData.password);
+      console.log('Login response:', response);
       
-      // Store the token and update auth state
-      await login(data.token);
+      if (!response || !response.token) {
+        throw new Error('Invalid response from server');
+      }
+
+      console.log('Calling login with token:', response.token);
+      await login(response.token);
+      console.log('Login successful, navigating to profile');
       
-      // Redirect to home page
-      navigate('/');
+      // Redirect to profile page
+      navigate('/profile', { replace: true });
     } catch (error) {
-      console.error('Login failed:', error.message);
+      console.error('Login failed:', error);
+      setServerError(error.message || 'Invalid email or password');
       setErrors(prev => ({
         ...prev,
         password: 'Invalid email or password.'
@@ -84,6 +98,7 @@ const Login = () => {
       <main className="login-content">
         <div className="login-form-container">
           <h1>Sign In</h1>
+          {serverError && <div className="server-error">{serverError}</div>}
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
               <input

@@ -6,9 +6,9 @@ export const API_ENDPOINTS = {
     REGISTER: `${API_BASE_URL}/auth/register`,
   },
   PROFILE: {
-    GET_PROFILES: `${API_BASE_URL}/profile`,
-    CREATE_PROFILE: `${API_BASE_URL}/profile`,
-    UPDATE_PROFILE: `${API_BASE_URL}/profile/:profileId`,
-    DELETE_PROFILE: `${API_BASE_URL}/profile/:profileId`
+    GET_PROFILES: `${API_BASE_URL}/profiles`,
+    CREATE_PROFILE: `${API_BASE_URL}/profiles`,
+    UPDATE_PROFILE: `${API_BASE_URL}/profiles/:profileId`,
+    DELETE_PROFILE: `${API_BASE_URL}/profiles/:profileId`
   }
 }; 

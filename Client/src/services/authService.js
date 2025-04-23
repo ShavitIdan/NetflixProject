@@ -2,51 +2,72 @@ import { API_BASE_URL } from '../config/api';
 
 export const authService = {
   async login(email, password) {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Login failed');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      if (!data.token) {
+        throw new Error('No token received from server');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
     }
-
-    return response.json();
   },
 
   async register(email, password) {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Registration failed');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
     }
-
-    return response.json();
   },
 
   async getCurrentUser(token) {
-    const response = await fetch(`${API_BASE_URL}/auth/me`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data');
       }
-    });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch user data');
+      return response.json();
+    } catch (error) {
+      console.error('Get current user error:', error);
+      throw error;
     }
-
-    return response.json();
   },
 
   logout() {

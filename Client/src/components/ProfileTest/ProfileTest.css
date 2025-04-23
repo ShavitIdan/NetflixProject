@@ -1,0 +1,94 @@
+.profile-test {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #141414;
+  border-radius: 8px;
+  color: #fff;
+}
+
+.error-message {
+  color: #e50914;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background: rgba(229, 9, 20, 0.1);
+  border-radius: 4px;
+}
+
+.create-profile {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #1f1f1f;
+  border-radius: 4px;
+}
+
+.create-profile input {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background: #333;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #fff;
+}
+
+.create-profile button {
+  padding: 0.5rem 1rem;
+  background: #e50914;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.create-profile button:disabled {
+  background: #666;
+  cursor: not-allowed;
+}
+
+.profiles-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.profiles-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #1f1f1f;
+  border-radius: 4px;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-info img {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.profile-actions button {
+  padding: 0.5rem 1rem;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.profile-actions button:hover {
+  background: #444;
+} 

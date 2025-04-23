@@ -1,24 +1,47 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import PrivateRoute from './routes/PrivateRoute';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuthContext } from './context/AuthContext';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import Home from './pages/Home/Home';
 import Profile from './pages/Profile/Profile';
+import ProfileTest from './components/ProfileTest/ProfileTest';
 import './App.css';
+
+// Create a separate component for the routes to use AuthContext
+const AppRoutes = () => {
+  const { isAuth } = useAuthContext();
+
+  console.log('AppRoutes - isAuth:', isAuth); // Debug log
+
+  return (
+    <Routes>
+      <Route 
+        path="/login" 
+        element={!isAuth ? <Login /> : <Navigate to="/profile" replace />} 
+      />
+      <Route 
+        path="/register" 
+        element={!isAuth ? <Register /> : <Navigate to="/profile" replace />} 
+      />
+      <Route 
+        path="/profile" 
+        element={isAuth ? <Profile /> : <Navigate to="/login" replace />} 
+      />
+      <Route 
+        path="/home" 
+        element={isAuth ? <Home /> : <Navigate to="/login" replace />} 
+      />
+      <Route path="/test" element={<ProfileTest />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
+    </Routes>
+  );
+};
 
 function App() {
   return (
     <AuthProvider>
-      <div className="App">
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
-          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-        </Routes>
-      </div>
+      <AppRoutes />
     </AuthProvider>
   );
 }
