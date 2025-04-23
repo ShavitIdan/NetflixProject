@@ -1,6 +1,6 @@
 .navbar{
     z-index: 100;
-    position: relaative;
+    position: fixed;
     width: 100%;
     padding: 20px 6%;
     display: flex;
@@ -8,7 +8,7 @@
     position: fixed;
     font-size: 14px;
     color: #e5e5e5;
-    background-image: linear-gradient(180deg, rgba(0,0,0,0.7), 10%)
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
 }
 
 .navbar-left{
@@ -18,7 +18,8 @@
 }
 
 .navbar-left img{
-    width: 90px;
+    width: 120px;
+    height: 180px;
 }
 
 .navbar-left ul{
@@ -112,6 +113,7 @@
 }
 
 .navbar-profile {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -123,4 +125,34 @@
   height: 32px;
   border-radius: 4px;
   object-fit: cover;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 10px 0;
+  min-width: 150px;
+  z-index: 1000;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  color: #e5e5e5;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-icon {
+  font-size: 16px;
 }

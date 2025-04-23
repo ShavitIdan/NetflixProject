@@ -5,13 +5,14 @@
 }
 
 .home-content {
-  padding-top: 60px;
+  /* Remove padding-top */
 }
 
 .hero {
   position: relative;
   height: 70vh;
   overflow: hidden;
+  margin-top: -60px; /* Offset the navbar height */
 }
 
 .hero-banner {

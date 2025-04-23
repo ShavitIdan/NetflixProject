@@ -1,12 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import './Navbar.css'
 import logo from '../../assets/logo2.png'
-import { FaSearch, FaBell, FaCaretDown } from 'react-icons/fa';
+import { FaSearch, FaBell, FaCaretDown, FaSignOutAlt } from 'react-icons/fa';
+import { useAuthContext } from '../../context/AuthContext';
 
 function Navbar({ selectedProfile }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuthContext();
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const handleNavClick = (path) => {
     navigate(path);
@@ -14,6 +17,11 @@ function Navbar({ selectedProfile }) {
 
   const isActive = (path) => {
     return location.pathname === path;
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
   };
 
   return (
@@ -47,13 +55,21 @@ function Navbar({ selectedProfile }) {
       <div className="navbar-right">
         <div className="icons">{<FaSearch/>}</div>
         <div className="icons">{<FaBell/>}</div>
-        <div className="navbar-profile">
+        <div className="navbar-profile" onClick={() => setShowDropdown(!showDropdown)}>
           <img 
             src={selectedProfile?.avatar || '../../assets/users/user_1.png'} 
             alt={selectedProfile?.name || 'Profile'} 
             className="profile" 
           />
-          {<FaCaretDown/>}
+          <FaCaretDown/>
+          {showDropdown && (
+            <div className="dropdown-menu">
+              <div className="dropdown-item" onClick={handleLogout}>
+                <FaSignOutAlt className="dropdown-icon" />
+                <span>Logout</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
