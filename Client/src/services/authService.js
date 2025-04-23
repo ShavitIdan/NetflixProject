@@ -29,33 +29,33 @@ export const authService = {
     }
   },
 
-  async register(email, password) {
+  async register(email, password, role = 'user') {
     try {
       const response = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, role }),
       });
-
+  
       const data = await response.json();
-      
+  
       if (!response.ok) {
         throw new Error(data.message || 'Registration failed');
       }
-
-      // Store token in localStorage
+  
       if (data.token) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
       }
-
+  
       return data;
     } catch (error) {
       throw error;
     }
   },
+  
 
   logout() {
     localStorage.removeItem('token');
