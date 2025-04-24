@@ -6,7 +6,7 @@ import { API_ENDPOINTS } from '../../config/api';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthContext';
 
-const VideoDetailsPopup = ({ video, onClose }) => {
+const VideoDetailsPopup = ({ video, onClose, onSaveChange }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -39,7 +39,11 @@ const VideoDetailsPopup = ({ video, onClose }) => {
         const currentProfile = profiles.find(profile => profile.isSelected);
         
         if (currentProfile && currentProfile.savedVideos) {
-          setIsSaved(currentProfile.savedVideos.includes(video.id));
+          // Check if the video ID exists in the savedVideos array
+          const isVideoSaved = currentProfile.savedVideos.some(savedVideo => 
+            savedVideo.id.toString() === video.id.toString()
+          );
+          setIsSaved(isVideoSaved);
         }
       } catch (error) {
         console.error('Error checking if video is saved:', error);
@@ -123,6 +127,10 @@ const VideoDetailsPopup = ({ video, onClose }) => {
         { 
           videoId: video.id,
           title: video.title || video.name,
+          poster: video.poster || `https://image.tmdb.org/t/p/w500${video.poster_path}`,
+          poster_path: video.poster_path,
+          backdrop_path: video.backdrop_path,
+          overview: video.overview
         },
         {
           headers: {
@@ -134,12 +142,15 @@ const VideoDetailsPopup = ({ video, onClose }) => {
 
       if (response.data && response.data.success) {
         setIsSaved(!isSaved);
+        // Call the callback with the new state and video ID
+        if (onSaveChange) {
+          onSaveChange(video.id, !isSaved);
+        }
       } else {
         throw new Error(response.data?.message || 'Failed to save/remove video');
       }
     } catch (error) {
       console.error('Error saving/removing video:', error);
-      alert(error.response?.data?.message || 'Failed to save/remove video. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -434,8 +445,19 @@ const VideoDetailsPopup = ({ video, onClose }) => {
                       onClick={handleSaveClick}
                       disabled={isLoading}
                     >
-                      {isSaved ? <FaBookmarkSolid /> : <FaBookmark />}
-                      {isSaved ? ' Saved' : ' Save'}
+                      {isLoading ? (
+                        'Loading...'
+                      ) : isSaved ? (
+                        <>
+                          <FaBookmarkSolid />
+                          <span>Remove from List</span>
+                        </>
+                      ) : (
+                        <>
+                          <FaBookmark />
+                          <span>Add to List</span>
+                        </>
+                      )}
                     </button>
                   )}
                 </div>

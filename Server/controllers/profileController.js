@@ -145,7 +145,8 @@ exports.getUserProfiles = async (req, res) => {
         id: profile._id,
         name: profile.name,
         avatar: profile.avatar,
-        isSelected: profile.isSelected
+        isSelected: profile.isSelected,
+        savedVideos: profile.savedVideos || []
       }))
     });
   } catch (error) {
@@ -155,7 +156,7 @@ exports.getUserProfiles = async (req, res) => {
 
 exports.saveVideo = async (req, res) => {
   try {
-    const { videoId, title, poster_path, backdrop_path, overview } = req.body;
+    const { videoId, title, poster, poster_path, backdrop_path, overview } = req.body;
     const userId = req.user._id;
 
     if (!videoId) {
@@ -168,8 +169,8 @@ exports.saveVideo = async (req, res) => {
       return res.status(404).json({ message: 'No selected profile found' });
     }
 
-    // Check if video is already saved
-    const existingVideo = profile.savedVideos.find(v => v.id === videoId);
+    // Check if video is already saved using a more robust comparison
+    const existingVideo = profile.savedVideos.find(v => v.id.toString() === videoId.toString());
     if (existingVideo) {
       return res.status(200).json({ 
         success: true,
@@ -182,6 +183,7 @@ exports.saveVideo = async (req, res) => {
     profile.savedVideos.push({
       id: videoId,
       title,
+      poster: poster || `https://image.tmdb.org/t/p/w500${poster_path}`,
       poster_path,
       backdrop_path,
       overview

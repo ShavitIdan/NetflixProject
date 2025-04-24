@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import './Navbar.css'
 import logo from '../../assets/logo2.png'
 import { FaSearch, FaBell, FaCaretDown, FaSignOutAlt, FaUser } from 'react-icons/fa';
@@ -52,7 +52,12 @@ function Navbar({ selectedProfile }) {
             Movies
           </li>
           <li>New & Popular</li>
-          <li>My List</li>
+          <li 
+            className={isActive('/my-list') ? 'active' : ''} 
+            onClick={() => handleNavClick('/my-list')}
+          >
+            My List
+          </li>
           <li>Browse</li>
         </ul>
       </div>

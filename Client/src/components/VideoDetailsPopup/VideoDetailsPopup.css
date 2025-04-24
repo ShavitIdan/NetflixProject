@@ -92,12 +92,42 @@
 }
 
 .save-button {
-  background-color: #e50914;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 4px;
   color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.save-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .save-button.saved {
-  background-color: #333;
+  background-color: #e50914;
+}
+
+.save-button.saved:hover {
+  background-color: #f40612;
+}
+
+.save-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.save-button svg {
+  font-size: 1.2rem;
+}
+
+.save-button span {
+  font-weight: 500;
 }
 
 .review-button {
@@ -105,7 +135,6 @@
   color: white;
 }
 
-.save-button:hover,
 .review-button:hover {
   background-color: #e50914;
 }
@@ -423,8 +452,4 @@
 .cast-list::-webkit-scrollbar-thumb {
   background-color: #666;
   border-radius: 4px;
-}
-
-.save-button svg {
-  font-size: 20px;
 } 

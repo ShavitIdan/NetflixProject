@@ -19,6 +19,7 @@ const profileSchema = new mongoose.Schema({
       type: String,
       required: true
     },
+    poster: String,
     poster_path: String,
     backdrop_path: String,
     overview: String

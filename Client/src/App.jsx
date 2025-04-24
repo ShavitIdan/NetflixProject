@@ -6,6 +6,7 @@ import Register from './pages/Register/Register';
 import Home from './pages/Home/Home';
 import Profile from './pages/Profile/Profile';
 import ProfileTest from './components/ProfileTest/ProfileTest';
+import MyList from './pages/MyList/MyList';
 import './App.css';
 
 // Create a separate component for the routes to use AuthContext
@@ -41,6 +42,7 @@ const AppRoutes = () => {
         element={isAuth ? <Home /> : <Navigate to="/login" replace />} 
       />
       <Route path="/test" element={<ProfileTest />} />
+      <Route path="/my-list" element={<MyList />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
