@@ -16,7 +16,7 @@ const ProfilePicture = ({
         <img src={avatar} alt={name} />
         {showDelete && (
           <button
-            className="delete-button"
+            className="profile-delete-button"
             onClick={(e) => {
               e.stopPropagation();
               onDelete();

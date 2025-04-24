@@ -20,7 +20,7 @@ const profileService = {
   createProfile: async (profileData) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(API_ENDPOINTS.PROFILE.CREATE_PROFILE, profileData, {
+      const response = await axios.post(API_ENDPOINTS.PROFILE.CREATE, profileData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -57,7 +57,7 @@ const profileService = {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.delete(
-        API_ENDPOINTS.PROFILE.DELETE_PROFILE.replace(':profileId', profileId),
+        API_ENDPOINTS.PROFILE.DELETE(profileId),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -79,7 +79,7 @@ const profileService = {
       }
 
       const response = await axios.post(
-        `${API_ENDPOINTS.PROFILE.SELECT}/${profileId}`,
+        API_ENDPOINTS.PROFILE.SELECT(profileId),
         {},
         {
           headers: {

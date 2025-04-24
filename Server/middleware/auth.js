@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Profile = require('../models/Profile');
 
 const auth = async (req, res, next) => {
   try {
@@ -16,7 +17,14 @@ const auth = async (req, res, next) => {
       return res.status(401).json({ message: 'Token is not valid' });
     }
 
-    req.user = user;
+    // Find the selected profile for this user
+    const selectedProfile = await Profile.findOne({ user: user._id, isSelected: true });
+    
+    req.user = {
+      ...user.toObject(),
+      profileId: selectedProfile ? selectedProfile._id : null
+    };
+    
     next();
   } catch (error) {
     res.status(401).json({ message: 'Token is not valid' });

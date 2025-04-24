@@ -12,12 +12,18 @@ export const API_ENDPOINTS = {
     CREATE: `${API_BASE_URL}/profiles`,
     UPDATE: (id) => `${API_BASE_URL}/profiles/${id}`,
     DELETE: (id) => `${API_BASE_URL}/profiles/${id}`,
-    SELECT: `${API_BASE_URL}/profiles/select`,
+    SELECT: (profileId) => `${API_BASE_URL}/profiles/select/${profileId}`,
     SAVE_VIDEO: `${API_BASE_URL}/profiles/save-video`,
     REMOVE_VIDEO: `${API_BASE_URL}/profiles/remove-video`
   },
   VIDEO: {
     CREATE: `${API_BASE_URL}/videos`,
     GET_DETAILS: `${API_BASE_URL}/videos`
+  },
+  REVIEW: {
+    CREATE: `${API_BASE_URL}/reviews`,
+    GET_VIDEO_REVIEWS: (videoId) => `${API_BASE_URL}/reviews/video/${videoId}`,
+    UPDATE: (id) => `${API_BASE_URL}/reviews/${id}`,
+    DELETE: (id) => `${API_BASE_URL}/reviews/${id}`
   }
 }; 

@@ -13,18 +13,18 @@ const reviewSchema = new mongoose.Schema({
   },
   rating: {
     type: Number,
-    required: [true, 'Rating is required'],
+    required: true,
     min: 1,
     max: 5
   },
   content: {
     type: String,
-    required: [false, 'Review content is not required']
+    trim: true
   },
   isPublic: {
     type: Boolean,
     default: true
-  },
+  }
 }, {
   timestamps: true
 });

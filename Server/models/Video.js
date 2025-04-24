@@ -1,19 +1,15 @@
 const mongoose = require('mongoose');
 
 const videoSchema = new mongoose.Schema({
-  title: {
+  tmdbId: {
     type: String,
-    required: [true, 'Title is required'],
-    trim: true
+    required: true,
+    unique: true
   },
-  videoID: {
-    type: String,
-    required: [true, 'Video URL is required']
-  },
-  reviews: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Review'
-  }]
+  averageRating: {
+    type: Number,
+    default: 0
+  }
 }, {
   timestamps: true
 });
