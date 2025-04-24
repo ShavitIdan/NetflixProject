@@ -25,6 +25,7 @@ const Profile = () => {
   const [newName, setNewName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editingProfileId, setEditingProfileId] = useState(null);
 
   const availableAvatars = [
     { path: '/assets/users/user_1.png', image: user1 },
@@ -102,34 +103,13 @@ const Profile = () => {
     setNewName(e.target.value);
   };
 
-  const handleNameSubmit = async (profileId, e) => {
-    e.preventDefault();
+  const handleNameSubmit = async (newName, profileId) => {
     try {
-      setError(null);
-      const profile = profiles.find(p => p.id === profileId);
-      const response = await profileService.updateProfile(profileId, { 
-        name: newName,
-        avatar: profile.avatarPath
-      });
-      
-      if (!response.profile) {
-        throw new Error('Invalid response format from server');
-      }
-
-      const avatarImage = availableAvatars.find(av => av.path === response.profile.avatar)?.image;
-      setProfiles(profiles.map(p => 
-        p.id === profileId ? { 
-          ...p,
-          name: response.profile.name,
-          avatar: avatarImage || p.avatar,
-          avatarPath: response.profile.avatar
-        } : p
-      ));
-      setEditingProfile(null);
-      setNewName(''); // Reset the new name after successful update
+      await profileService.updateProfile(profileId, { name: newName });
+      setEditingProfileId(null);
+      fetchProfiles();
     } catch (error) {
-      console.error('Error updating profile:', error);
-      setError(error.response?.data?.message || 'Failed to update profile name. Please try again.');
+      console.error('Error updating profile name:', error);
     }
   };
 
@@ -200,11 +180,12 @@ const Profile = () => {
               key={profile.id}
               avatar={profile.avatar}
               name={profile.name}
-              isEditing={editingProfile === profile.id}
+              isEditing={editingProfileId === profile.id}
               onDelete={() => handleDeleteClick(profile.id)}
-              onEdit={editingProfile === profile.id ? handleNameChange : () => handleEditClick(profile)}
+              onEdit={() => setEditingProfileId(profile.id)}
+              onNameSubmit={(newName) => handleNameSubmit(newName, profile.id)}
               onClick={() => handleProfileClick(profile)}
-              showDelete={true}
+              showDelete={profiles.length > 1}
             />
           ))}
           {profiles.length < 5 && (

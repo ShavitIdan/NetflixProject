@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import './Navbar.css'
 import logo from '../../assets/logo2.png'
-import { FaSearch, FaBell, FaCaretDown, FaSignOutAlt } from 'react-icons/fa';
+import { FaSearch, FaBell, FaCaretDown, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { useAuthContext } from '../../context/AuthContext';
 
 function Navbar({ selectedProfile }) {
@@ -22,6 +22,10 @@ function Navbar({ selectedProfile }) {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleChangeProfile = () => {
+    navigate('/profile');
   };
 
   return (
@@ -64,6 +68,10 @@ function Navbar({ selectedProfile }) {
           <FaCaretDown/>
           {showDropdown && (
             <div className="dropdown-menu">
+              <div className="dropdown-item" onClick={handleChangeProfile}>
+                <FaUser className="dropdown-icon" />
+                <span>Change Profile</span>
+              </div>
               <div className="dropdown-item" onClick={handleLogout}>
                 <FaSignOutAlt className="dropdown-icon" />
                 <span>Logout</span>

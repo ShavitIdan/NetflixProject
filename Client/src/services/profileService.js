@@ -37,7 +37,7 @@ const profileService = {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        API_ENDPOINTS.PROFILE.UPDATE_PROFILE.replace(':profileId', profileId),
+        API_ENDPOINTS.PROFILE.UPDATE(profileId),
         profileData,
         {
           headers: {
