@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import './Navbar.css'
-import logo from '../../assets/logo2.png'
+import logo from '../../assets/Logo2.png'
 import { FaSearch, FaBell, FaCaretDown, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { useAuthContext } from '../../context/AuthContext';
 
