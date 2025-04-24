@@ -1,6 +1,7 @@
 const Review = require('../models/Review');
 const Video = require('../models/Video');
 const Profile = require('../models/Profile');
+const axios = require('axios');
 
 // Create a new review
 exports.createReview = async (req, res) => {
@@ -16,7 +17,20 @@ exports.createReview = async (req, res) => {
     // Find or create video document
     let video = await Video.findOne({ tmdbId: videoId });
     if (!video) {
-      video = new Video({ tmdbId: videoId });
+      // Fetch video details from TMDB
+      const tmdbResponse = await axios.get(
+        `https://api.themoviedb.org/3/${media_type}/${videoId}?api_key=${process.env.TMDB_API_KEY}`
+      );
+      
+      const tmdbData = tmdbResponse.data;
+      video = new Video({
+        tmdbId: videoId,
+        title: tmdbData.title || tmdbData.name,
+        poster_path: tmdbData.poster_path,
+        backdrop_path: tmdbData.backdrop_path,
+        overview: tmdbData.overview,
+        media_type: media_type
+      });
       await video.save();
     }
 
@@ -86,7 +100,7 @@ exports.getProfileReviews = async (req, res) => {
 
     // Get all reviews for the profile
     const reviews = await Review.find({ profile: profileId })
-      .populate('video', 'tmdbId')
+      .populate('video', 'tmdbId title name poster_path backdrop_path overview media_type')
       .sort({ createdAt: -1 });
 
     res.json(reviews);

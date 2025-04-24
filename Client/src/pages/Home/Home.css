@@ -12,13 +12,17 @@
   position: relative;
   height: 70vh;
   overflow: hidden;
-  margin-top: -60px; /* Offset the navbar height */
+  margin-top: 0; /* Remove negative margin */
+  padding-top: 60px; /* Add padding to account for navbar */
 }
 
 .hero-banner {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .hero-overlay {
@@ -28,6 +32,7 @@
   right: 0;
   padding: 2rem;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+  z-index: 1;
 }
 
 .caption-img {
@@ -326,20 +331,15 @@
   height: 80vh;
   overflow: hidden;
   margin-top: -60px;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-  left: 50%;
-  right: 50%;
-  transform: translateX(-50%);
+  width: 100%;
 }
 
 .carousel-container {
   position: relative;
   height: 100%;
   display: flex;
-  transition: transform 0.5s ease;
   width: 100%;
+  transition: transform 0.5s ease;
 }
 
 .carousel-slide {
@@ -352,6 +352,13 @@
   background-position: center;
   background-repeat: no-repeat;
   transition: transform 0.5s ease;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.carousel-slide.active {
+  opacity: 1;
+  visibility: visible;
 }
 
 .carousel-overlay {

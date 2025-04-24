@@ -29,6 +29,7 @@ const Home = () => {
   const carouselRef = useRef(null);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [savedVideos, setSavedVideos] = useState([]);
 
   // Function to generate random match percentage
   const getRandomMatch = () => {
@@ -47,80 +48,196 @@ const Home = () => {
       return;
     }
 
-    const fetchAllContent = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch multiple pages for each category
-        const fetchMultiplePages = async (fetchFunction, pages = 3) => {
-          const results = await Promise.all(
-            Array.from({ length: pages }, (_, i) => fetchFunction(i + 1))
-          );
-          return results.flatMap(result => result.results || result);
-        };
+    fetchAllContent();
+  }, [isAuth, selectedProfile, navigate, location.pathname]);
 
-        let contentPromises;
-
-        if (location.pathname === '/movies') {
-          contentPromises = [
-            fetchMultiplePages(tmdbService.getNewestContent, 5),
-            fetchMultiplePages(tmdbService.getMostViewedInIsrael, 5),
-            fetchMultiplePages(tmdbService.getTopRated, 5),
-            fetchMultiplePages(tmdbService.getAnimatedContent, 5),
-            fetchMultiplePages(tmdbService.getActionContent, 5),
-            fetchMultiplePages(tmdbService.getNewestContent, 5) // For Last Added to My List
-          ];
-        } else if (location.pathname === '/tv') {
-          contentPromises = [
-            fetchMultiplePages(tmdbService.getNewestTVShows, 10),
-            fetchMultiplePages(tmdbService.getTrendingTVShows, 10),
-            fetchMultiplePages(tmdbService.getTopRatedTVShows, 10),
-            fetchMultiplePages(tmdbService.getAnimatedTVShows, 10),
-            fetchMultiplePages(tmdbService.getActionTVShows, 10),
-            fetchMultiplePages(tmdbService.getNewestTVShows, 10) // For Last Added to My List
-          ];
-        } else {
-          contentPromises = [
-            fetchMultiplePages(tmdbService.getNewestContent, 5),
-            fetchMultiplePages(tmdbService.getMostViewedInIsrael, 5),
-            fetchMultiplePages(tmdbService.getTopRated, 5),
-            fetchMultiplePages(tmdbService.getAnimatedContent, 5),
-            fetchMultiplePages(tmdbService.getActionContent, 5),
-            fetchMultiplePages(tmdbService.getNewestContent, 5) // For Last Added to My List
-          ];
-        }
-
-        const [
-          matchedContent,
-          newestContent,
-          topIsraelContent,
-          lastReviewedContent,
-          mostPopularContent,
-          lastAddedContent
-        ] = await Promise.all(contentPromises);
-
-        setAllContent({
-          matchedContent,
-          newestContent,
-          topIsraelContent,
-          lastReviewedContent,
-          mostPopularContent,
-          lastAddedContent
-        });
-      } catch (error) {
-        console.error('Error fetching content:', error);
-        setError('Failed to load content. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (!allContent) {
-      fetchAllContent();
+  // Separate effect to handle saved videos updates
+  useEffect(() => {
+    if (selectedProfile && (selectedProfile._id || selectedProfile.id)) {
+      fetchSavedVideos();
     }
-  }, [isAuth, selectedProfile, navigate, location.pathname, allContent]);
+  }, [selectedProfile]);
 
-  // Update content rows when route changes
+  const fetchSavedVideos = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(API_ENDPOINTS.PROFILE.GET_PROFILES, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const currentProfile = response.data.profiles.find(p => p.isSelected);
+      if (currentProfile && currentProfile.savedVideos) {
+        const uniqueVideos = new Map();
+        currentProfile.savedVideos.forEach(video => {
+          if (!uniqueVideos.has(video.id)) {
+            uniqueVideos.set(video.id, video);
+          }
+        });
+
+        const formattedVideos = Array.from(uniqueVideos.values())
+          .map(video => ({
+            id: video.id,
+            title: video.title,
+            poster: video.poster,
+            backdrop_path: video.backdrop_path,
+            overview: video.overview,
+            media_type: video.media_type || 'movie',
+            savedAt: video.savedAt || new Date().toISOString()
+          }))
+          .sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
+
+        setSavedVideos(formattedVideos);
+      } else {
+        setSavedVideos([]);
+      }
+    } catch (error) {
+      console.error('Error fetching saved videos:', error);
+      setSavedVideos([]);
+    }
+  };
+
+  const handleSaveChange = async (videoId, isSaved) => {
+    // Only refresh the saved videos
+    await fetchSavedVideos();
+  };
+
+  const fetchAllContent = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch multiple pages for each category
+      const fetchMultiplePages = async (fetchFunction, pages = 3) => {
+        const results = await Promise.all(
+          Array.from({ length: pages }, (_, i) => fetchFunction(i + 1))
+        );
+        return results.flatMap(result => result.results || result);
+      };
+
+      let contentPromises;
+
+      if (location.pathname === '/movies') {
+        contentPromises = [
+          fetchMultiplePages(tmdbService.getNewestContent, 5),
+          fetchMultiplePages(tmdbService.getMostViewedInIsrael, 5),
+          fetchMultiplePages(tmdbService.getTopRated, 5),
+          fetchMultiplePages(tmdbService.getAnimatedContent, 5),
+          fetchMultiplePages(tmdbService.getActionContent, 5)
+        ];
+      } else if (location.pathname === '/tv') {
+        contentPromises = [
+          fetchMultiplePages(tmdbService.getNewestTVShows, 10),
+          fetchMultiplePages(tmdbService.getTrendingTVShows, 10),
+          fetchMultiplePages(tmdbService.getTopRatedTVShows, 10),
+          fetchMultiplePages(tmdbService.getAnimatedTVShows, 10),
+          fetchMultiplePages(tmdbService.getActionTVShows, 10)
+        ];
+      } else {
+        contentPromises = [
+          fetchMultiplePages(tmdbService.getNewestContent, 5),
+          fetchMultiplePages(tmdbService.getMostViewedInIsrael, 5),
+          fetchMultiplePages(tmdbService.getTopRated, 5),
+          fetchMultiplePages(tmdbService.getAnimatedContent, 5),
+          fetchMultiplePages(tmdbService.getActionContent, 5)
+        ];
+      }
+
+      const [
+        matchedContent,
+        newestContent,
+        topIsraelContent,
+        animatedContent,
+        actionContent
+      ] = await Promise.all(contentPromises);
+
+      // Add newest content for the carousel
+      const mostPopularContent = await tmdbService.getNewestContent();
+      console.log('Newest content for carousel:', mostPopularContent);
+
+      // Fetch reviewed videos for the current profile
+      let reviewedVideos = [];
+      if (selectedProfile && (selectedProfile._id || selectedProfile.id)) {
+        try {
+          const token = localStorage.getItem('token');
+          const profileId = selectedProfile._id || selectedProfile.id;
+          console.log('Fetching reviews for profile:', profileId);
+
+          // First get the profile to get the user ID
+          const profileResponse = await axios.get(API_ENDPOINTS.PROFILE.GET_PROFILES, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          const currentProfile = profileResponse.data.profiles.find(p => p.isSelected);
+          console.log('Current profile:', currentProfile);
+
+          if (currentProfile) {
+            // Get reviews for this profile
+            const reviewsResponse = await axios.get(
+              `${API_ENDPOINTS.REVIEW.CREATE}/profile/${profileId}`,
+              {
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                }
+              }
+            );
+
+            console.log('Reviews response:', reviewsResponse.data);
+
+            if (reviewsResponse.data && reviewsResponse.data.length > 0) {
+              // Sort reviews by date (newest first) and get the videos
+              reviewedVideos = reviewsResponse.data
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .map(review => {
+                  console.log('Processing review:', review);
+                  return {
+                    id: review.video.tmdbId,
+                    title: review.video.title || review.video.name,
+                    poster: review.video.poster_path ? `https://image.tmdb.org/t/p/w500${review.video.poster_path}` : null,
+                    backdrop_path: review.video.backdrop_path ? `https://image.tmdb.org/t/p/original${review.video.backdrop_path}` : null,
+                    overview: review.video.overview,
+                    media_type: review.video.media_type || 'movie',
+                    review: review.content,
+                    rating: review.rating,
+                    reviewedAt: review.createdAt
+                  };
+                });
+              console.log('Processed reviewed videos:', reviewedVideos);
+            } else {
+              console.log('No reviews found for profile');
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching reviewed videos:', error);
+          if (error.response) {
+            console.error('Error response:', error.response.data);
+          }
+        }
+      }
+
+      setAllContent({
+        matchedContent,
+        newestContent,
+        topIsraelContent,
+        animatedContent,
+        actionContent,
+        reviewedVideos,
+        mostPopularContent: mostPopularContent.results || []
+      });
+    } catch (error) {
+      console.error('Error fetching content:', error);
+      setError('Failed to load content. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update content rows when route or content changes
   useEffect(() => {
     if (!allContent) return;
 
@@ -128,10 +245,12 @@ const Home = () => {
       matchedContent,
       newestContent,
       topIsraelContent,
-      lastReviewedContent,
-      mostPopularContent,
-      lastAddedContent
+      animatedContent,
+      actionContent,
+      reviewedVideos
     } = allContent;
+
+    console.log('Current reviewed videos in effect:', reviewedVideos);
 
     // Set titles based on route
     const sectionTitles = location.pathname === '/movies' 
@@ -183,8 +302,8 @@ const Home = () => {
         id: item.id,
         title: item.title || item.name,
         rating: "TV-MA",
-        poster: item.poster_path,
-        backdrop: item.backdrop_path,
+        poster: item.poster ? item.poster : (item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null),
+        backdrop: item.backdrop_path ? `https://image.tmdb.org/t/p/original${item.backdrop_path}` : null,
         overview: item.overview,
         media_type: item.media_type,
         match: getRandomMatch()
@@ -210,69 +329,102 @@ const Home = () => {
       },
       {
         title: sectionTitles.lastReviewed,
-        items: formatContentItems(lastReviewedContent)
-      },
-      {
-        title: sectionTitles.mostPopular,
-        items: formatContentItems(mostPopularContent)
+        items: reviewedVideos.map(video => ({
+          ...video,
+          rating: video.rating || "TV-MA",
+          match: getRandomMatch()
+        }))
       },
       {
         title: "Animation",
-        items: formatContentItems(newestContent)
+        items: formatContentItems(animatedContent)
       },
       {
         title: "Action",
-        items: formatContentItems(newestContent)
+        items: formatContentItems(actionContent)
       },
-      {
+      ...(savedVideos.length > 0 ? [{
         title: sectionTitles.lastAdded,
-        items: formatContentItems(lastAddedContent)
-      }
+        items: savedVideos
+      }] : [])
     ];
 
-    // Ensure we have enough items in each row
+    console.log('Final rows with reviewed videos:', rows[3]); // Log the Last Reviewed row
+
+    // Only ensure minimum items for non-saved videos rows
     const minItemsPerRow = 10;
-    const ensuredRows = rows.map(row => ({
-      ...row,
-      items: row.items.length >= minItemsPerRow 
-        ? row.items 
-        : [...row.items, ...Array(minItemsPerRow - row.items.length).fill({
-            id: `placeholder-${row.title}-${Math.random()}`,
-            title: 'Loading...',
-            poster: '',
-            backdrop: '',
-            overview: '',
-            media_type: location.pathname === '/tv' ? 'tv' : 'movie',
-            match: getRandomMatch()
-          })]
-    }));
+    const ensuredRows = rows.map(row => {
+      // Skip the minimum items check for the "Last Added to My List" and "Last Reviewed" rows
+      if (row.title === sectionTitles.lastAdded || row.title === sectionTitles.lastReviewed) {
+        return row;
+      }
+      
+      return {
+        ...row,
+        items: row.items.length >= minItemsPerRow 
+          ? row.items 
+          : [...row.items, ...Array(minItemsPerRow - row.items.length).fill({
+              id: `placeholder-${row.title}-${Math.random()}`,
+              title: 'Loading...',
+              poster: null,
+              backdrop: null,
+              overview: '',
+              media_type: location.pathname === '/tv' ? 'tv' : 'movie',
+              match: getRandomMatch()
+            })]
+      };
+    });
 
     setContentRows(ensuredRows);
-  }, [location.pathname, allContent]);
+  }, [location.pathname, allContent, savedVideos]);
 
   // Update carousel items when content changes
   useEffect(() => {
-    if (allContent?.mostPopularContent) {
-      const items = allContent.mostPopularContent
+    console.log('allContent changed:', allContent);
+    if (allContent) {
+      // Try to get content from any available array
+      const contentArray = allContent.matchedContent || 
+                         allContent.newestContent || 
+                         allContent.topIsraelContent || 
+                         allContent.animatedContent || 
+                         allContent.actionContent || 
+                         [];
+
+      console.log('Using content array for carousel:', contentArray);
+      
+      // Shuffle the array and take first 4 items
+      const shuffledArray = [...contentArray].sort(() => Math.random() - 0.5);
+      const items = shuffledArray
         .slice(0, 4)
-        .map(item => ({
-          id: item.id,
-          title: item.title || item.name,
-          backdrop: item.backdrop_path,
-          overview: item.overview,
-          media_type: item.media_type
-        }));
+        .map(item => {
+          const processedItem = {
+            id: item.id,
+            title: item.title || item.name,
+            backdrop: item.backdrop_path ? `https://image.tmdb.org/t/p/original${item.backdrop_path}` : null,
+            overview: item.overview,
+            media_type: item.media_type || 'movie'
+          };
+          console.log('Processed carousel item:', processedItem);
+          return processedItem;
+        });
+      console.log('Setting carousel items:', items);
       setCarouselItems(items);
+    } else {
+      console.log('No content available');
+      setCarouselItems([]);
     }
   }, [allContent]);
 
   // Auto-rotate carousel
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % carouselItems.length);
-    }, 5000);
+    console.log('Carousel items length:', carouselItems.length);
+    if (carouselItems.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % carouselItems.length);
+      }, 5000);
 
-    return () => clearInterval(interval);
+      return () => clearInterval(interval);
+    }
   }, [carouselItems.length]);
 
   const nextSlide = () => {
@@ -294,71 +446,14 @@ const Home = () => {
     }
   };
 
-  const handleVideoClick = async (item) => {
-    try {
-      console.log('Clicked video item:', item);
-
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-
-      // First, try to get the video from our database
-      try {
-        const getResponse = await axios.get(
-          `${API_ENDPOINTS.VIDEO.GET_DETAILS}/${item.id}`,
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-
-        console.log('Existing video found:', getResponse.data);
-        setSelectedVideo({
-          ...item,
-          ...getResponse.data
-        });
-      } catch (getError) {
-        // If video doesn't exist, create it
-        if (getError.response?.status === 404) {
-          console.log('Video not found, creating new one');
-          const createResponse = await axios.post(
-            API_ENDPOINTS.VIDEO.CREATE,
-            {
-              tmdbId: item.id,
-              title: item.title || item.name
-            },
-            {
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-              }
-            }
-          );
-
-          console.log('New video created:', createResponse.data);
-          setSelectedVideo({
-            ...item,
-            ...createResponse.data
-          });
-        } else {
-          throw getError;
-        }
-      }
-    } catch (error) {
-      console.error('Error handling video click:', error);
-      // If there's an error, still show the popup with just the TMDB data
-      setSelectedVideo({
-        ...item,
-        title: item.title || item.name,
-        backdrop_path: item.backdrop_path,
-        overview: item.overview,
-        media_type: item.media_type
-      });
-    }
+  const handleVideoClick = (video) => {
+    const processedVideo = {
+      ...video,
+      // Use the existing URLs directly
+      poster: video.poster || (video.poster_path ? `https://image.tmdb.org/t/p/w500${video.poster_path}` : null),
+      backdrop: video.backdrop || (video.backdrop_path ? `https://image.tmdb.org/t/p/original${video.backdrop_path}` : null)
+    };
+    setSelectedVideo(processedVideo);
   };
 
   const handleClosePopup = () => {
@@ -395,18 +490,18 @@ const Home = () => {
                   key={item.id}
                   className={`carousel-slide ${index === currentSlide ? 'active' : ''}`}
                   style={{
-                    backgroundImage: `url(${item.backdrop})`,
+                    backgroundImage: item.backdrop ? `url(${item.backdrop})` : 'none',
                     transform: `translateX(${(index - currentSlide) * 100}%)`
                   }}
                 >
                   <div className="carousel-overlay">
                     <div className="carousel-content">
                       <h1>{item.title}</h1>
-                      <p>{item.overview}</p>
+                      <p>{item.overview ? `${item.overview.substring(0, 150)}...` : 'No description available'}</p>
                       <div className="carousel-buttons">
                         <button 
                           className="info-button"
-                          onClick={() => navigate(`/details/${item.id}?type=${item.media_type}`)}
+                          onClick={() => handleVideoClick(item)}
                         >
                           <FaInfo /> More Info
                         </button>
@@ -461,11 +556,13 @@ const Home = () => {
                         <div className="rank-number">{i + 1}</div>
                       )}
                       <div className="thumbnail">
-                        <img 
-                          src={item.poster} 
-                          alt={item.title} 
-                          className="thumbnail-img"
-                        />
+                        {item.poster && (
+                          <img 
+                            src={item.poster} 
+                            alt={item.title} 
+                            className="thumbnail-img"
+                          />
+                        )}
                         <div className="thumbnail-info">
                           <div className="thumbnail-controls">
                             <button className="info-button">
@@ -497,7 +594,8 @@ const Home = () => {
       {selectedVideo && (
         <VideoDetailsPopup 
           video={selectedVideo} 
-          onClose={handleClosePopup} 
+          onClose={handleClosePopup}
+          onSaveChange={handleSaveChange}
         />
       )}
     </div>

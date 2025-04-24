@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FaTimes, FaBookmark, FaBookmark as FaBookmarkSolid } from 'react-icons/fa';
 import './VideoDetailsPopup.css';
 import axios from 'axios';
@@ -19,13 +19,53 @@ const VideoDetailsPopup = ({ video, onClose, onSaveChange }) => {
   const [publicReviews, setPublicReviews] = useState([]);
   const [userReview, setUserReview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isProcessingRef = useRef(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     // Check if video is saved when popup opens
     const checkIfSaved = async () => {
+      if (!isMounted || isProcessingRef.current) return;
+      isProcessingRef.current = true;
+
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
+
+        // First check if video exists in our database
+        try {
+          await axios.get(`${API_ENDPOINTS.VIDEO.GET_DETAILS}/${video.id}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+        } catch (error) {
+          // If video doesn't exist, create it
+          if (error.response?.status === 404) {
+            const videoData = {
+              tmdbId: video.id,
+              title: video.title || video.name,
+              poster_path: video.poster_path,
+              backdrop_path: video.backdrop_path,
+              overview: video.overview,
+              media_type: video.media_type || 'movie'
+            };
+
+            console.log('Creating new video:', videoData);
+            await axios.post(
+              API_ENDPOINTS.VIDEO.CREATE,
+              videoData,
+              {
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                }
+              }
+            );
+          }
+        }
 
         const response = await axios.get(API_ENDPOINTS.PROFILE.GET_PROFILES, {
           headers: {
@@ -43,14 +83,22 @@ const VideoDetailsPopup = ({ video, onClose, onSaveChange }) => {
           const isVideoSaved = currentProfile.savedVideos.some(savedVideo => 
             savedVideo.id.toString() === video.id.toString()
           );
-          setIsSaved(isVideoSaved);
+          if (isMounted) {
+            setIsSaved(isVideoSaved);
+          }
         }
       } catch (error) {
         console.error('Error checking if video is saved:', error);
+      } finally {
+        isProcessingRef.current = false;
       }
     };
 
     checkIfSaved();
+
+    return () => {
+      isMounted = false;
+    };
   }, [video]);
 
   useEffect(() => {
@@ -188,35 +236,48 @@ const VideoDetailsPopup = ({ video, onClose, onSaveChange }) => {
   };
 
   const handleSubmitReview = async () => {
+    console.log('handleSubmitReview called');
     try {
       setIsSubmitting(true);
       const token = localStorage.getItem('token');
+      console.log('Token:', token ? 'exists' : 'missing');
+      
       if (!token) {
         navigate('/login');
         return;
       }
 
+      console.log('Fetching profiles...');
       const profilesResponse = await axios.get(API_ENDPOINTS.PROFILE.GET_PROFILES, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
+      console.log('Profiles response:', profilesResponse.data);
 
       const currentProfile = profilesResponse.data.profiles.find(p => p.isSelected);
+      console.log('Current profile:', currentProfile);
+      
       if (!currentProfile) {
         throw new Error('No profile selected');
       }
 
+      // Create the review
+      const reviewData = {
+        videoId: video.id,
+        profileId: currentProfile._id || currentProfile.id,
+        rating: rating,
+        content: reviewText,
+        isPublic: isPublic,
+        media_type: video.media_type || 'movie'
+      };
+      console.log('Review data to be sent:', reviewData);
+
+      console.log('Sending review creation request...');
       const response = await axios.post(
         API_ENDPOINTS.REVIEW.CREATE,
-        {
-          videoId: video.id,
-          profileId: currentProfile.id,
-          rating,
-          content: reviewText,
-          isPublic
-        },
+        reviewData,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -224,12 +285,26 @@ const VideoDetailsPopup = ({ video, onClose, onSaveChange }) => {
           }
         }
       );
+      console.log('Review creation response:', response.data);
 
       setUserReview(response.data);
       setShowReviews(false);
     } catch (error) {
-      console.error('Error submitting review:', error);
-      alert(error.response?.data?.message || 'Failed to submit review. Please try again.');
+      console.error('Full error object:', error);
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error('Error response:', error.response.data);
+        alert(error.response.data.message || 'Failed to submit review. Please try again.');
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('Error request:', error.request);
+        alert('No response from server. Please check your connection and try again.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error('Error message:', error.message);
+        alert('An error occurred. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -321,8 +396,18 @@ const VideoDetailsPopup = ({ video, onClose, onSaveChange }) => {
 
   if (!video) return null;
 
-  // Use the same poster image as the home page
-  const posterImage = video.poster;
+  // Clean the backdrop URL if it contains double URLs
+  const cleanBackdropUrl = (url) => {
+    if (!url) return null;
+    // If URL contains the base URL twice, extract the last part
+    if (url.includes('image.tmdb.org/image.tmdb.org')) {
+      const parts = url.split('/t/p/');
+      return `https://image.tmdb.org/t/p/${parts[parts.length - 1]}`;
+    }
+    return url;
+  };
+
+  const backdropImage = cleanBackdropUrl(video.backdrop);
 
   return (
     <div className="video-details-popup">
@@ -428,11 +513,16 @@ const VideoDetailsPopup = ({ video, onClose, onSaveChange }) => {
         ) : (
           <>
             <div className="popup-header">
-              <img 
-                src={posterImage}
-                alt={video.title || video.name || 'Video'} 
-                className="popup-backdrop-image"
-              />
+              {backdropImage && (
+                <img 
+                  src={backdropImage}
+                  alt={video.title || video.name || 'Video'} 
+                  className="popup-backdrop-image"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              )}
               <div className="popup-header-content">
                 <h2>{video.title || video.name || 'Untitled'}</h2>
                 <div className="popup-actions">

@@ -6,6 +6,18 @@ const videoSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  title: {
+    type: String,
+    required: true
+  },
+  poster_path: String,
+  backdrop_path: String,
+  overview: String,
+  media_type: {
+    type: String,
+    enum: ['movie', 'tv'],
+    required: true
+  },
   averageRating: {
     type: Number,
     default: 0
