@@ -102,6 +102,11 @@
   flex: 1;
 }
 
+/* Add specific gap for Top 10 items */
+.row.isTop10 .thumbnails {
+  gap: 4rem; 
+}
+
 .thumbnails::-webkit-scrollbar {
   display: none;
 }
@@ -464,4 +469,31 @@
 
 .indicator.active {
   background-color: white;
+}
+
+.top-10-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: 20px; /* Reduced from 40px to move numbers closer */
+}
+
+.rank-number {
+  position: absolute;
+  left: -70px; 
+  font-size: 150px;
+  font-weight: bold;
+  color: transparent;
+  -webkit-text-stroke: 2px #808080;
+  text-shadow: none;
+  z-index: 1;
+  font-family: 'Arial Black', sans-serif;
+  line-height: 1;
+  pointer-events: none; /* Allow clicking through the number */
+}
+
+.top-10-item .thumbnail {
+  margin-left: 0;
+  position: relative; /* Ensure proper stacking context */
+  z-index: 2; /* Place thumbnail above the number */
 }

@@ -178,7 +178,8 @@ const Home = () => {
         index === self.findIndex((t) => t.id === item.id)
       );
 
-      return uniqueItems.map(item => ({
+      // Map the items with additional properties
+      const mappedItems = uniqueItems.map(item => ({
         id: item.id,
         title: item.title || item.name,
         rating: "TV-MA",
@@ -188,6 +189,8 @@ const Home = () => {
         media_type: item.media_type,
         match: getRandomMatch()
       }));
+
+      return mappedItems;
     };
 
     // Set content rows with proper filtering
@@ -202,7 +205,8 @@ const Home = () => {
       },
       {
         title: sectionTitles.topIsrael,
-        items: formatContentItems(topIsraelContent)
+        items: formatContentItems(topIsraelContent).slice(0, 10),
+        isTop10: true
       },
       {
         title: sectionTitles.lastReviewed,
@@ -324,7 +328,7 @@ const Home = () => {
           const createResponse = await axios.post(
             API_ENDPOINTS.VIDEO.CREATE,
             {
-              videoId: item.id,
+              tmdbId: item.id,
               title: item.title || item.name
             },
             {
@@ -433,7 +437,7 @@ const Home = () => {
         {/* Content Rows */}
         <div className="content-rows">
           {contentRows.map((row, index) => (
-            <div key={index} className="row">
+            <div key={index} className={`row ${row.isTop10 ? 'isTop10' : ''}`}>
               <h2 className="row-title">{row.title}</h2>
               <div className="row-container">
                 <button 
@@ -449,10 +453,13 @@ const Home = () => {
                   {row.items.map((item, i) => (
                     <div 
                       key={i} 
-                      className="thumbnail-wrapper"
+                      className={`thumbnail-wrapper ${row.isTop10 ? 'top-10-item' : ''}`}
                       onClick={() => handleVideoClick(item)}
                       onMouseEnter={() => setHoveredItem(item.id)}
                     >
+                      {row.isTop10 && (
+                        <div className="rank-number">{i + 1}</div>
+                      )}
                       <div className="thumbnail">
                         <img 
                           src={item.poster} 

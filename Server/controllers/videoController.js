@@ -27,16 +27,21 @@ exports.getVideo = async (req, res) => {
 // Create video
 exports.createVideo = async (req, res) => {
   try {
-    const videoId = req.body.videoId || req.body.videoID;
-    const title = req.body.title;
+    const { tmdbId, title } = req.body;
 
-    if (!videoId) {
-      return res.status(400).json({ message: 'Video ID is required' });
+    if (!tmdbId) {
+      return res.status(400).json({ message: 'TMDB ID is required' });
+    }
+
+    // Check if video already exists
+    const existingVideo = await Video.findOne({ tmdbId });
+    if (existingVideo) {
+      return res.status(200).json(existingVideo);
     }
 
     const video = new Video({
-      videoID: videoId,
-      title: title || `Video ${videoId}`
+      tmdbId,
+      title: title || `Video ${tmdbId}`
     });
 
     const newVideo = await video.save();
@@ -119,7 +124,7 @@ exports.getVideoDetails = async (req, res) => {
   try {
     const { videoId } = req.params;
 
-    const video = await Video.findOne({ videoID: videoId });
+    const video = await Video.findOne({ tmdbId: videoId });
     if (!video) {
       return res.status(404).json({ message: 'Video not found' });
     }
