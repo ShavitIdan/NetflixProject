@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://localhost:8080/api';
+export const API_BASE_URL = 'https://netflixproject-2rk0.onrender.com/api';
 
 export const API_ENDPOINTS = {
   AUTH: {
